@@ -280,15 +280,16 @@ class NotifyService(common_service.CommonService):
             f17_data_list.append(
                 '{}: {}'.format(run_info.run_id, self.format_data(run_data_seq_dict.get('{}_{}'.format(run_info.seq_id, '17')))))
 
+        markdown_content0 = '# A Swift Glimpse at Metric Performance\n'
         markdown_content1 = '### Run_ID: {}'.format('\n- * #### '.join(run_id_name_list))
         markdown_content2 = '### LC and MS performance: {}'.format('\n- * #### '.join(run_id_name_pred_list))
 
         markdown_content3 = '### Qualified metrics: {}'.format('\n- * #### '.join(run_id_qual_feat_list))
         # if len()
         markdown_content4 = '### Unqualified metrics: {}'.format('\n- * #### '.join(run_id_unqual_feat_list))
-        markdown_content5 = '## Metrics description:'
+        markdown_content5 = '## Metric performance:'
 
-        markdown_content6 = '### F5 (Intensity variation of adjacent MS1 scan): {}'.format('\n- * #### '.join(f6_data_list))
+        markdown_content6 = '### F5 (Intensity variation of adjacent MS1 scan, %): {}'.format('\n- * #### '.join(f6_data_list))
         markdown_content7 = '### F6 (Median MS1 accuracy of identified precursors, ppm): {}'.format(
             '\n- * #### '.join(f7_data_list))
         markdown_content8 = '### F7 (TIC MS1 signal): {}'.format('\n- * #### '.join(f8_data_list))
@@ -298,9 +299,10 @@ class NotifyService(common_service.CommonService):
         markdown_content11 = '### F11 (Number of identified peptides): {}'.format('\n- * #### '.join(f13_data_list))
         markdown_content12 = '### F12 (Number of identified proteins): {}'.format('\n- * #### '.join(f14_data_list))
         markdown_content13 = '### F15 (Ion mobility accuracy): {}'.format('\n- * #### '.join(f17_data_list))
-        markdown_content14 = '## More results in the email attachment (HTML file) .'
+        markdown_content14 = '## Only the metrics exhibiting unique values matching those of the raw file are presented here; for further metrics, kindly consult the email attachment (html file).'
 
         markdown_content_list = []
+        markdown_content_list.append(markdown_content0)
         markdown_content_list.append(markdown_content1)
         markdown_content_list.append(markdown_content2)
         markdown_content_list.append(markdown_content3)
@@ -320,7 +322,7 @@ class NotifyService(common_service.CommonService):
 
     def format_data(self, fn_data):
         if not fn_data:
-            return ''
+            return None
         if type(fn_data) == str:
             fn_data = float(fn_data)
         if fn_data > 100000:
@@ -330,7 +332,7 @@ class NotifyService(common_service.CommonService):
 
     def format_int_data(self, fn_data):
         if not fn_data:
-            return ''
+            return None
         if type(fn_data) == str:
             fn_data = int(fn_data)
         if fn_data > 100000:
