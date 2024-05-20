@@ -344,7 +344,7 @@ class MainBox(wx.Frame):
         thread_output_dir_path = output_path
         try:
             self.analysis_thread = AnalysisThread(diann_path, msconvert_path, thread_output_dir_path, inst_name,
-                                                  run_prefix, self.choose_file_list, notify_email)
+                                                  run_prefix, self.choose_file_list, notify_email, wx_token)
             self.analysis_thread.daemon = True
             self.analysis_thread.start()
             # # 改变Finished按钮的颜色，及文字

@@ -27,7 +27,7 @@ from applet.service.s6_service import S6Service
 
 class AnalysisThread(Thread):
     def __init__(self, diann_path, msconvert_path, output_path, inst_name, run_prefix, choose_file_list: [FileInfo],
-                 notify_email,
+                 notify_email, wx_token,
                  model_dir_path='./resource/model/unisplit'):
         # 线程实例化时立即启动
         Thread.__init__(self)
@@ -41,6 +41,7 @@ class AnalysisThread(Thread):
         self.choose_file_list = choose_file_list
         self.run_flag = True
         self.notify_email = notify_email
+        self.wx_token = wx_token
 
         self.inst_name = inst_name
         self.run_prefix = run_prefix
@@ -87,7 +88,7 @@ class AnalysisThread(Thread):
         self.pre_score_service = PredictionScoreService(self.model_dir_path, self.output_path, self.choose_file_list,
                                                         self.logger, start_time=start_time)
 
-        self.notify_service = NotifyService(self.notify_email, self.output_path, self.choose_file_list,
+        self.notify_service = NotifyService(self.notify_email, self.wx_token, self.output_path, self.choose_file_list,
                                             self.logger, start_time=start_time)
 
         self.service_list = [self.file_init_service, self.msconvert_service,

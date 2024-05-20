@@ -117,6 +117,7 @@ class MonitorEventHandler(object):
         interval_time = self.monitor_panel.monitor_control_panel.interval_time_ctrl.GetValue()
 
         notify_email = self.monitor_panel.monitor_control_panel.notify_email_text.GetValue()
+        wx_token = self.monitor_panel.monitor_control_panel.wx_token_text.GetValue()
 
         file_filter_size = self.monitor_panel.monitor_control_panel.file_filter_panel.min_size_ctrl.GetValue()
         filter_type = self.get_filter_type_checked()
@@ -127,7 +128,7 @@ class MonitorEventHandler(object):
         self.an_monitor_thread = AnalysisMonitorThread(monitor_dir_list, inst_name, run_prefix, scan_time,
                                                        interval_time,
                                                        msconvert_path, diann_path, output_path,
-                                                       './resource/model/unisplit', notify_email,
+                                                       './resource/model/unisplit', notify_email, wx_token,
                                                        file_filter_size, filter_type, file_name)
         self.an_monitor_thread.daemon = True
         # 日志清空

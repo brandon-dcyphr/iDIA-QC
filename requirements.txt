@@ -1,0 +1,20 @@
+wxpython
+pypubsub
+pyteomics
+lxml
+pandas
+pyecharts
+pyyaml
+pycaret
+xgboost
+pyinstaller==6.2.0
+timspy
+opentimspy==1.0.12
+
+# 下面是训练需要安装的包
+matplotlib
+scipy
+scikit-learn
+dotmap
+seaborn
+shapash

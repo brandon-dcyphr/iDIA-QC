@@ -30,7 +30,7 @@ from applet.utils import file_utils
 class AnalysisMonitorThread(Thread):
     def __init__(self, monitor_dir_list, inst_name, run_prefix, scan_time, interval_time, msconvert_path, diann_path,
                  output_path,
-                 model_dir_path, notify_email, file_filter_size, filter_type, filter_file_name):
+                 model_dir_path, notify_email, wx_token, file_filter_size, filter_type, filter_file_name):
         # 线程实例化时立即启动
         Thread.__init__(self)
         self.monitor_dir_list = monitor_dir_list
@@ -47,6 +47,7 @@ class AnalysisMonitorThread(Thread):
         self.pre_score_service = PredictionScoreService(model_dir_path, output_path, [], logger)
         self.run_flag = True
         self.notify_email = notify_email
+        self.wx_token = wx_token
         if file_filter_size is None:
             self.file_filter_size = 0
         else:
@@ -105,7 +106,7 @@ class AnalysisMonitorThread(Thread):
                 # 等这一批处理完了再发送邮件
                 # 删除temp文件
 
-                notify_service = NotifyService(self.notify_email, self.output_path, notify_file_list, self.logger,
+                notify_service = NotifyService(self.notify_email, self.wx_token, self.output_path, notify_file_list, self.logger,
                                                pub_channel='monitor_log')
                 notify_service.deal_process()
                 self.notify_reload_data()
