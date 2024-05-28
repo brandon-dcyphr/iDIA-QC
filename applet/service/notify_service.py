@@ -91,35 +91,35 @@ class NotifyService(common_service.CommonService):
         subject_str = '\n'.join(send_data_list)
 
         message = MIMEMultipart()  # 多个MIME对象
-        message['From'] = 'diaqc<{}>'.format(mail_user)
+        message['From'] = 'iDIA-QC<{}>'.format(mail_user)
         message['To'] = self.notify_email
         message['Subject'] = Header(subject_str, 'utf-8')  # 主题
 
         if len(run_info_list) == 1:
-            content_str = 'Dear iDIAQC user, <br/>'
+            content_str = 'Dear iDIA-QC user, <br/>'
             content_str = content_str + 'The MS raw file you uploaded with the name {} has been analyzed. Here is a summary of the results.<br/>'.format(
                 run_info_list[0].run_name)
             content_str = content_str + 'For detailed results and illustrations, please refer to the attached HTML file. <br/>'
             content_str = content_str + 'Thank you for using our service.  <br/>'
             content_str = content_str + 'If you have any further questions, please upload them to GitHub. <a href="{}">Click there</a> <br/>'.format(
                 setting.github_url)
-            content_str = content_str + 'iDIAQC Support, iDIAQC team'
+            content_str = content_str + 'iDIA-QC Support, iDIA-QC team'
         else:
             # 是否是单个仪器
             if len(inst_list) == 1:
-                content_str = 'Dear iDIAQC user, <br/>'
+                content_str = 'Dear iDIA-QC user, <br/>'
                 content_str = content_str + 'The MS raw files you uploaded have been analyzed. Here is a summary of the results. For detailed results and illustrations, please refer to the attached HTML file. <br/>'
                 content_str = content_str + 'Thank you for using our service.  <br/>'
                 content_str = content_str + 'If you have any further questions, please upload them to GitHub. <a href="{}">Click there</a> <br/>'.format(
                     setting.github_url)
-                content_str = content_str + 'iDIAQC Support, iDIAQC team'
+                content_str = content_str + 'iDIA-QC Support, iDIA-QC team'
             else:
-                content_str = 'Dear iDIAQC user, <br/>'
+                content_str = 'Dear iDIA-QC user, <br/>'
                 content_str = content_str + 'The MS raw files you uploaded have been analyzed. Here is a summary of the results. For detailed results and illustrations, please refer to the attached HTML files. The results from each instrument are placed in a separate HTML file. <br/>'
                 content_str = content_str + 'Thank you for using our service.  <br/>'
                 content_str = content_str + 'If you have any further questions, please upload them to GitHub. <a href="{}">Click there</a> <br/>'.format(
                     setting.github_url)
-                content_str = content_str + 'iDIAQC Support, iDIAQC team'
+                content_str = content_str + 'iDIA-QC Support, iDIA-QC team'
         content = MIMEText(content_str, 'html')
         message.attach(content)  # 添加内容
         return message
