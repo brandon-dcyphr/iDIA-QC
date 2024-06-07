@@ -117,12 +117,12 @@ class PredictionScoreService(common_service.CommonService):
 
     def save_to_csv_old(self, output_path):
         # 保存数据到csv
-        pred_output_path = os.path.join(output_path, 'pred')
+        pred_output_path = os.path.join(output_path, 'prediction_output')
         if not os.path.exists(pred_output_path):
             os.mkdir(pred_output_path)
 
-        lc_pred_path = os.path.join(pred_output_path, 'lc_pred')
-        ms_pred_path = os.path.join(pred_output_path, 'ms_pred')
+        lc_pred_path = os.path.join(pred_output_path, 'LC_prediction_output')
+        ms_pred_path = os.path.join(pred_output_path, 'MS_prediction_output')
         if not os.path.exists(lc_pred_path):
             os.mkdir(lc_pred_path)
         if not os.path.exists(ms_pred_path):
@@ -152,7 +152,7 @@ class PredictionScoreService(common_service.CommonService):
 
     def save_to_csv(self, output_path, data_source):
         # 保存数据到csv
-        pred_output_path = os.path.join(output_path, 'pred')
+        pred_output_path = os.path.join(output_path, 'prediction_output')
         if not os.path.exists(pred_output_path):
             os.mkdir(pred_output_path)
 

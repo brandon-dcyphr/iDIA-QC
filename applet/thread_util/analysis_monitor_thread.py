@@ -263,7 +263,7 @@ class AnalysisMonitorThread(Thread):
             data_save_deal_service.send_msg(3, msg='Save data error, skip. {}'.format(file_abs_path))
         if not self.run_flag:
             return False
-        pic_dir_path = os.path.join(self.output_path, 'pic')
+        pic_dir_path = os.path.join(self.output_path, 'Metrics_performance_output')
         if not os.path.exists(pic_dir_path):
             os.mkdir(pic_dir_path)
         pic_deal_service = PicService(self.output_path, None, self.logger, pub_channel='analysis_info')
