@@ -208,12 +208,3 @@ def split_mtg_dataset(mglc_featdata, mgms_featdata, label_dataset, feat_conf, te
 
     return cv_datas
 
-
-
-if __name__ == '__main__':
-    # read raw dataset
-    
-    # LC dataset
-
-    # MS dataset
-    pass
