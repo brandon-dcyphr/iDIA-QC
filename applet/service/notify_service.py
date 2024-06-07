@@ -136,7 +136,7 @@ class NotifyService(common_service.CommonService):
         message = self.message_config(run_info_list, pred_info_list)
         # # 添加Excel类型附件
         # 添加html
-        pic_dir_path = os.path.join(self.base_output_path, 'Metrics_performance_output')
+        pic_dir_path = os.path.join(self.base_output_path, 'metric_performance_output')
         if os.path.exists(pic_dir_path):
             html_list = os.listdir(pic_dir_path)
             for html_name in html_list:

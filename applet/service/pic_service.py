@@ -294,7 +294,7 @@ class PicService(common_service.CommonService):
                  pub_channel='analysis_info', start_time=0):
         common_service.CommonService.__init__(self, base_output_path, file_list, logger, step, pub_channel, start_time)
         self.run_id_list = run_id_list
-        self.pic_save_path = os.path.join(base_output_path, 'Metrics_performance_output')
+        self.pic_save_path = os.path.join(base_output_path, 'metric_performance_output')
         self.init_dir()
 
     def init_dir(self):
