@@ -1,4 +1,3 @@
-import datetime
 import os.path
 import shutil
 
@@ -469,7 +468,7 @@ class PicService(common_service.CommonService):
         echars_list1 = self.draw_f_html(run_id_list, fn_data_dict)
         echars_f4 = self.draw_f4_html(run_id_list, f4_data_dict)
         echars_list3 = self.draw_s7_html(run_id_list, s7_data_tag_dict)
-        heat_map_pic = self.draw_heat_map_html(pred_info_dict)
+        heat_map_pic = self.draw_heat_map_html(run_id_list, pred_info_dict)
 
         line_pic_list = []
         page = Page(layout=Page.SimplePageLayout, interval=10, page_title='iDIA-QC')
@@ -782,46 +781,24 @@ class PicService(common_service.CommonService):
     热力图
     '''
 
-    def draw_heat_map_html(self, pred_info_dict: dict):
+    def draw_heat_map_html(self, run_id_list, pred_info_dict: dict):
 
-        inst_id_echart_dict = {}
-        # for inst_id in pred_info_dict.keys():
         value = []
         xaxis_list = []
-        display_y_list = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'LC', 'MS']
-        yaxis_list = ['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F10', 'F11', 'F12', 'F13','F14', 'F15', 'F16', 'F17', 'LC', 'MS']
-        # inst_pred_info_dict = pred_info_dict[inst_id]
-        run_id_pred_key_keys = pred_info_dict.keys()
-
-        # 初始化，先全为-1
-
-        # 先初始化一个2维数组
-        # init_val = [[-1 for xx in range(len(xaxis_list))] for yy in range(len(yaxis_list))]
-
-        for run_id_pred_key in run_id_pred_key_keys:
-            run_id = run_id_pred_key.split('_')[0]
-            pred_key = str(run_id_pred_key.split('_')[1]).upper()
-
-            if pred_key not in yaxis_list:
-                continue
-
-            if run_id not in xaxis_list:
-                xaxis_list.append(run_id)
-
-            x_index = xaxis_list.index(run_id)
-            y_index = yaxis_list.index(pred_key)
-            value.append([x_index, y_index, pred_info_dict[run_id_pred_key]])
-            # init_val[x_index][y_index] = pred_info_dict[run_id_pred_key]
-
-        # 再序列化出来
-        init_val = [[-1 for xx in range(len(xaxis_list))] for yy in range(len(yaxis_list))]
-        for val_data in value:
-            init_val[val_data[1]][val_data[0]] = val_data[2]
-
         display_val = []
-        for x_index in range(len(init_val)):
-            for y_index in range(len(init_val[x_index])):
-                display_val.append([y_index, x_index, init_val[x_index][y_index]])
+        display_y_list = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14',
+                          'F15', 'LC', 'MS']
+        yaxis_list = ['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17',
+                      'lc', 'ms']
+
+        for x_index, run_id in enumerate(run_id_list):
+            xaxis_list.append(run_id)
+            for y_index, pred_key in enumerate(yaxis_list):
+                # 这个顺序和上面的是对应的
+                each_val = pred_info_dict.get('{}_{}'.format(run_id, pred_key))
+                if each_val is None:
+                    each_val = -1
+                display_val.append([x_index, y_index, each_val])
 
         heat_map_pic = HeatMap(init_opts)
         heat_map_pic.add_xaxis(xaxis_list)
