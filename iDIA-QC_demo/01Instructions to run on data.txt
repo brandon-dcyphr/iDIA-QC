@@ -1,0 +1,15 @@
+
+Background Introduction: The demo data is provided for manual analysis ("Manually mode") .
+
+1. Select the file to be analyzed from the "Input" module in the software.
+
+2. Choose the type of instrument that generated the file.
+
+3. Assign an instrument ID to the corresponding instrument for this file.
+
+4. Choose the notification method for the "output", such as email or WeChat with token ID.
+   Note: To obtain the token ID, follow the WeChat public account "pushplus推送加". The official website is www.pushplus.plus.
+
+5. Enter the output directory information for the file path.
+
+6. Click "Run" to start the analysis.
