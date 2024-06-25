@@ -275,4 +275,3 @@ if __name__ == '__main__':
     datasets = create_test_dataset(exp_config, label_genpath, feat_dir)
     models = load_models(exp_config['model_path'])
     construct_index(datasets, models, exp_config)
-
