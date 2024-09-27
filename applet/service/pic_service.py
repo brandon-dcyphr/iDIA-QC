@@ -464,7 +464,7 @@ class PicService(common_service.CommonService):
                          pred_info_dict: dict, html_dir_path):
 
         echars_list1 = self.draw_f_html(run_id_list, fn_data_dict)
-        echars_f4 = self.draw_f4_html(run_id_list, f4_data_dict)
+        echars_f3 = self.draw_f3_html(run_id_list, f4_data_dict)
         echars_list3 = self.draw_s7_html(run_id_list, s7_data_tag_dict)
         heat_map_pic = self.draw_heat_map_html(run_id_list, pred_info_dict)
 
@@ -472,14 +472,13 @@ class PicService(common_service.CommonService):
         page = Page(layout=Page.SimplePageLayout, interval=10, page_title='iDIA-QC')
         page.add(heat_map_pic)
         line_pic_list.extend(echars_list1)
-        line_pic_list.append(echars_f4)
+        line_pic_list.append(echars_f3)
         line_pic_list.extend(echars_list3)
-        # 13, 14, 4, 8, 11, 9, 3, 7, 10, 17, 5, 6, 12
-        for p_index in [13, 14, 4, 8, 11, 9, 3, 7, 10, 17, 5, 6, 12]:
-            for line_pic in line_pic_list:
-                if p_index == line_pic.index:
-                    page.add(line_pic)
-                    break
+
+        line_pic_list.sort(key=lambda x:x.index)
+        for line_pic in line_pic_list:
+            page.add(line_pic)
+
         page.render(os.path.join(html_dir_path, run_prefix + '.html'))
 
     # 返回ins分组的图表列表对象
@@ -586,7 +585,7 @@ class PicService(common_service.CommonService):
             grid = (
                 Grid(init_opts).add(line_pic, grid_opts=opts.GridOpts(pos_right="15%"), is_control_axis_index=True)
             )
-            grid.index = int(f_tag)
+            grid.index = int(display_tag)
             echart_list.append(grid)
 
         f51_data_list = fn_data_dict["51"]
@@ -598,7 +597,7 @@ class PicService(common_service.CommonService):
 
         # 画F5
         line_pic = Line(init_opts)
-        line_pic.index = 5
+        line_pic.index = 4
         x_list = run_id_list
         line_pic.add_xaxis(x_list)
         line_pic.add_yaxis(series_name='+1_percent', y_axis=f51_data_list, label_opts=opts.LabelOpts(is_show=False))
@@ -640,16 +639,15 @@ class PicService(common_service.CommonService):
         grid = (
             Grid(init_opts).add(line_pic, grid_opts=opts.GridOpts(pos_right="15%"), is_control_axis_index=True)
         )
-        grid.index = 5
+        grid.index = 4
         echart_list.append(grid)
         return echart_list
 
-    # 画f4
-    def draw_f4_html(self, run_id_list, f4_data_dict: dict):
+    def draw_f3_html(self, run_id_list, f4_data_dict: dict):
         inst_id_echart_dict = {}
 
         line_pic = Line(init_opts)
-        line_pic.index = 4
+        line_pic.index = 3
         x_list = [str((i + 1)).zfill(3) for i in range(1, 1001)]
         line_pic.add_xaxis(x_list)
         # N条线，每条线1000个点
@@ -683,10 +681,9 @@ class PicService(common_service.CommonService):
         grid = (
             Grid(init_opts).add(line_pic, grid_opts=opts.GridOpts(pos_right="15%"), is_control_axis_index=True)
         )
-        grid.index = 4
+        grid.index = 3
         return grid
 
-    # 画S7 (F1,F2,F3,F9,F15,F16)
     def draw_s7_html(self, run_id_list, s7_data_tag_dict: dict):
         inst_id_echart_dict = {}
         s7_echars_list = []
@@ -731,7 +728,7 @@ class PicService(common_service.CommonService):
                 legend_style = opts.LegendOpts(type_='scroll', orient='vertical', align='auto', pos_right='right', textstyle_opts=lagent_label_text_style)
 
             line_pic = Line(init_opts)
-            line_pic.index = int(data_tag)
+            line_pic.index = int(display_tag)
             # x_list = ['T' + str((i + 1)) for i in range(len(pept_data_info[pept_list[0]]))]
             # x_list = x_run_id_list
             line_pic.add_xaxis(run_id_list)
@@ -770,7 +767,7 @@ class PicService(common_service.CommonService):
             grid = (
                 Grid(init_opts).add(line_pic, grid_opts=opts.GridOpts(pos_right="15%"), is_control_axis_index=True)
             )
-            grid.index = int(data_tag)
+            grid.index = int(display_tag)
             s7_echars_list.append(grid)
         return s7_echars_list
 
