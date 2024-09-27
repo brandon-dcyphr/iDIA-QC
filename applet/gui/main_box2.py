@@ -53,7 +53,7 @@ class MainBox(wx.Frame):
         self.msconvert_deal_count = 0
         self.msconvert_all_count = 0
         self.deal_step = 0
-        self.all_step_count = 12
+        self.all_step_count = 11
 
         self.diann_deal_count = 0
         self.diann_all_count = 0

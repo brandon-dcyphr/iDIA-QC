@@ -427,8 +427,6 @@ class PicService(common_service.CommonService):
                 for run_info in run_info_list:
                     seq_id = run_info.seq_id
                     pept_val = s7_seq_data_tag_dict.get('{}_{}_{}'.format(seq_id, data_tag, pept_name))
-                    # if not pept_val:
-                    #     pept_val = 0
                     s7_data_tag_dict.setdefault(pept_name, []).append(pept_val)
             s7_data_dict[data_tag] = s7_data_tag_dict
 
@@ -447,7 +445,7 @@ class PicService(common_service.CommonService):
         for pred_info in pred_info_list:
             # 如果不是.d F17就没有数据
             thiz_run_id = seq_run_id_dict[pred_info.seq_id]
-            if thiz_run_id not in d_file_run_id_list and pred_info.pred_key == 'F17':
+            if thiz_run_id not in d_file_run_id_list and pred_info.pred_key == 'F15':
                 continue
             pred_info_dict[
                 '{}_{}'.format(thiz_run_id, pred_info.pred_key)] = pred_info.pred_label
@@ -484,7 +482,6 @@ class PicService(common_service.CommonService):
                     break
         page.render(os.path.join(html_dir_path, run_prefix + '.html'))
 
-    # 画f5,F6,F7,F8,F10,F11,F13,F14,F17
     # 返回ins分组的图表列表对象
     def draw_f_html(self, run_id_list, fn_data_dict: dict):
 
@@ -788,7 +785,8 @@ class PicService(common_service.CommonService):
         display_val = []
         display_y_list = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14',
                           'F15', 'LC', 'MS']
-        yaxis_list = ['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17',
+        yaxis_list = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14',
+                      'F15',
                       'lc', 'ms']
 
         for x_index, run_id in enumerate(run_id_list):

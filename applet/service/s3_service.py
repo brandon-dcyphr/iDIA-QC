@@ -105,10 +105,9 @@ class S3Service(common_service.CommonService):
             if not self.run_flag:
                 self.send_msg(2)
                 return False
-            # self.send_msg(9, 'Deal F17 data')
             f17_process.deal(self.s3_output_path, self.file_list)
 
-            self.send_msg(1, 'Saving F5, F6, F7, F10, F13, F14 and F17 results', with_time=True)
+            self.send_msg(1, 'Saving S3 results', with_time=True)
             return True
         except Exception as e:
             logger.exception('Deal S3 exception')

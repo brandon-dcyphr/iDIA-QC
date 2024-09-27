@@ -173,7 +173,7 @@ class AnalysisThread(Thread):
             logger.info('-----end analysis------')
         except Exception as e:
             logger.exception('deal analysis exception')
-            info_msg = AnalysisInfoMsg(0, 3, 'Deal analysis Exception: {}'.format(e))
+            info_msg = AnalysisInfoMsg(0, 3, 'Deal analysis Exception')
             pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
 
         # 发送完成事件
@@ -202,5 +202,8 @@ class AnalysisThread(Thread):
         logger.info('Start clear temp mzXML file.')
         # 找到mzml的目录
         temp_mzml_dir = os.path.join(self.output_path, 'mzXML')
-        shutil.rmtree(temp_mzml_dir)
+        try:
+            shutil.rmtree(temp_mzml_dir)
+        except Exception:
+            pass
         logger.info('Clear temp mzXML file over.')

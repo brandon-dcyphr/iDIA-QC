@@ -11,9 +11,6 @@ from applet.service.pic_service import PicService
 
 PRED_KEY_LIST = ['lc','F1', 'F2', 'F3', 'ms', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15']
 
-new_map_dict = {'F2': 'F3', 'F3': 'F4', 'F4': 'F5', 'F5': 'F6', 'F6': 'F7', 'F7': 'F8', 'F1': 'F2',
-                'F8': 'F10', 'F9': 'F11', 'F10': 'F12', 'F11': 'F13', 'F12': 'F14', 'F13': 'F15',
-                'F14': 'F16', 'F15': 'F17', 'lc': 'lc', 'ms': 'ms'}
 
 class DataInfoEventHandler(object):
     def __init__(self, data_info_panel: DataInfoPanel):
@@ -62,29 +59,11 @@ class DataInfoEventHandler(object):
             ope_grid.SetCellValue(row_index, 2, str(run_info.run_id))
             ope_grid.SetCellValue(row_index, 3, str(run_info.run_name))
 
-            # 新逻辑，有个新的对应关系
-            # 3 -》 2
-            # 4 -》 3
-            # 5 -》 4
-            # 6 -》 5
-            # 7 -》 6
-            # 8 -》 7
-            # 9 -》 1
-            # 10 -》 8
-            # 11 -》 9
-            # 12 -》 10
-            # 13 -》 11
-            # 14 -》 12
-            # 15 -》 13
-            # 16 -》 14
-            # 17 -》 15
-
             for d_index, pred_key in enumerate(PRED_KEY_LIST):
-                old_pred_key = new_map_dict[pred_key]
-                if run_info.file_type != 'D' and old_pred_key == 'F17':
+                if run_info.file_type != 'D' and pred_key == 'F15':
                     ope_grid.SetCellValue(row_index, d_index + 4, '-')
                 else:
-                    ope_grid.SetCellValue(row_index, d_index + 4, str(pred_seq_map[run_info.seq_id][old_pred_key]))
+                    ope_grid.SetCellValue(row_index, d_index + 4, str(pred_seq_map[run_info.seq_id][pred_key]))
             ope_grid.SetCellValue(row_index, 21, str(run_info.gmt_create))
             row_index = row_index + 1
 
@@ -160,11 +139,11 @@ class DataInfoEventHandler(object):
             ope_grid.SetCellValue(row_index, 2, str(run_info.run_id))
             ope_grid.SetCellValue(row_index, 3, str(run_info.run_name))
             for d_index, pred_key in enumerate(PRED_KEY_LIST):
-                old_pred_key = new_map_dict[pred_key]
-                if run_info.file_type != 'D' and old_pred_key == 'F17':
+                # old_pred_key = new_map_dict[pred_key]
+                if run_info.file_type != 'D' and pred_key == 'F15':
                     ope_grid.SetCellValue(row_index, d_index + 4, '-')
                 else:
-                    ope_grid.SetCellValue(row_index, d_index + 4, str(pred_seq_map[run_info.seq_id][old_pred_key]))
+                    ope_grid.SetCellValue(row_index, d_index + 4, str(pred_seq_map[run_info.seq_id][pred_key]))
 
             ope_grid.SetCellValue(row_index, 21, str(run_info.gmt_create))
             row_index = row_index + 1

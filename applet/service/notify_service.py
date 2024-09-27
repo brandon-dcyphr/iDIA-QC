@@ -173,6 +173,7 @@ class NotifyService(common_service.CommonService):
     def deal_send_wx(self, run_info_list, pred_info_list, run_data_list):
         logger = self.logger
         try:
+            logger.info('Process send wx notify')
             if self.wx_token is None or len(self.wx_token) == 0:
                 self.send_msg(1, msg='There is no need email to notify')
                 return True
@@ -205,21 +206,18 @@ class NotifyService(common_service.CommonService):
                                       run_data_list: [RunData]):
         title = 'DIA分析结束'
 
-        new_key_map = {'F3': 'F2', 'F4': 'F3', 'F5': 'F4', 'F6': 'F5', 'F7': 'F6', 'F8': 'F7', 'F9': 'F1', 'F10': 'F8', 'F11': 'F9', 'F12': 'F10',
-                       'F13': 'F11', 'F14': 'F12', 'F15': 'F13', 'F16': 'F14', 'F17': 'F15', 'lc': 'LC', 'ms': 'MS', 'F2': 'F1' }
-
         pred_dict = {}
         run_id_qual_feat_dict = {}
         run_id_unqual_feat_dict = {}
         for pred_info in pred_info_list:
             if pred_info.pred_label == 0:
                 if pred_info.pred_label not in ['lc', 'ms']:
-                    run_id_qual_feat_dict.setdefault(pred_info.run_id, []).append(new_key_map.get(pred_info.pred_key))
+                    run_id_qual_feat_dict.setdefault(pred_info.run_id, []).append(pred_info.pred_key)
                 pred_dict['{}_{}'.format(pred_info.run_id, pred_info.pred_key)] = 'Qualified'
 
             elif pred_info.pred_label == 1:
                 if pred_info.pred_label not in ['lc', 'ms']:
-                    run_id_unqual_feat_dict.setdefault(pred_info.run_id, []).append(new_key_map.get(pred_info.pred_key))
+                    run_id_unqual_feat_dict.setdefault(pred_info.run_id, []).append(pred_info.pred_key)
                 pred_dict['{}_{}'.format(pred_info.run_id, pred_info.pred_key)] = 'Unqualified'
 
         run_data_seq_dict = {}

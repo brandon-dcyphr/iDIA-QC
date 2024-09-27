@@ -13,11 +13,12 @@ from applet.utils import ai_pred_data_build_util
 
 # Score_1.0
 SCORE_1_FLAG = 'prediction_score_1'
+SCORE_0_FLAG = 'prediction_score_0'
 # Label
 LABEL_FLAG = 'label'
 
 PREDICTION_SCORE_FLAG = 'pred_1_score'
-PREDICTION_LABEL_FLAG = 'pred_label'
+PREDICTION_LABEL_FLAG = 'prediction_label'
 
 
 class PredictionScoreService(common_service.CommonService):
@@ -75,18 +76,23 @@ class PredictionScoreService(common_service.CommonService):
         return save_pred_info_list
 
     '''
-    预测
+    prediction
     '''
 
     def prediction_score(self, data, feat_tsname):
         model = self.models[feat_tsname]
         pred_rlts = predict_model(model, data=data, raw_score=True)
         pred_out = {}
-        pred_out[PREDICTION_SCORE_FLAG] = pred_rlts[SCORE_1_FLAG][0]
-        pred_out[PREDICTION_LABEL_FLAG] = pred_rlts[LABEL_FLAG][0]
+        if feat_tsname == 'F2':
+            pred_out[PREDICTION_SCORE_FLAG] = pred_rlts[SCORE_0_FLAG].tolist()[0]
+            pred_out[PREDICTION_LABEL_FLAG] = 1 - pred_rlts[PREDICTION_LABEL_FLAG].tolist()[0]
+        else:
+            pred_out[PREDICTION_SCORE_FLAG] = pred_rlts[SCORE_1_FLAG].tolist()[0]
+            pred_out[PREDICTION_LABEL_FLAG] = pred_rlts[PREDICTION_LABEL_FLAG].tolist()[0]
         if self.logger:
-            self.logger.info('prediction score over, score: {}, pred_label: {}'.format(pred_rlts[SCORE_1_FLAG],
-                                                                                       pred_rlts[LABEL_FLAG]))
+            self.logger.info('prediction score over, score: {}, pred_label: {}, feat_tsname: {}'.format(pred_out[PREDICTION_SCORE_FLAG],
+                                                                                                        pred_out[PREDICTION_LABEL_FLAG], feat_tsname))
+
         return pred_out
 
     def prediction_all_score(self, run_info, run_data_list, f4_data_list, s7_data_list):
@@ -94,7 +100,7 @@ class PredictionScoreService(common_service.CommonService):
         run_id = run_info.run_id
         seq_id = run_info.seq_id
         pred_info_list = []
-        for feat_name in ['lc', 'F2', 'F3', 'F4']:
+        for feat_name in ['lc', 'F1', 'F2', 'F3']:
             pred_info = PredInfo()
             lc_pred_out = self.prediction_score(df_lc_data, feat_name)
             pred_info.run_id = run_id
@@ -104,7 +110,7 @@ class PredictionScoreService(common_service.CommonService):
             pred_info.pred_label = int(lc_pred_out[PREDICTION_LABEL_FLAG])
             pred_info_list.append(pred_info)
 
-        for feat_name in ['ms', 'F5', 'F6', 'F7', 'F8', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17']:
+        for feat_name in ['ms', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15']:
             ms_pred_out = self.prediction_score(df_ms_data, feat_name)
             pred_info = PredInfo()
             pred_info.run_id = run_id
@@ -115,41 +121,6 @@ class PredictionScoreService(common_service.CommonService):
             pred_info_list.append(pred_info)
         return pred_info_list
 
-    def save_to_csv_old(self, output_path):
-        # 保存数据到csv
-        pred_output_path = os.path.join(output_path, 'prediction_output')
-        if not os.path.exists(pred_output_path):
-            os.mkdir(pred_output_path)
-
-        lc_pred_path = os.path.join(pred_output_path, 'LC_prediction_output')
-        ms_pred_path = os.path.join(pred_output_path, 'MS_prediction_output')
-        if not os.path.exists(lc_pred_path):
-            os.mkdir(lc_pred_path)
-        if not os.path.exists(ms_pred_path):
-            os.mkdir(ms_pred_path)
-
-        seq_id_list = db_utils_run_data.query_all_seq_id()
-        pred_info_list = db_utils_run_data.query_all_pred_info(seq_id_list)
-        # 按照key分组
-        pred_info_key_dict = {}
-        for pred_info in pred_info_list:
-            if pred_info.pred_label == 0:
-                pred_label = 'qualified '
-            elif pred_info.pred_label == 1:
-                pred_label = 'unqualified'
-            else:
-                pred_label = 'unknown'
-            pred_info_key_dict.setdefault(pred_info.pred_key, []).append(
-                {'Run_ID': pred_info.run_id, 'pred_1_score': pred_info.pred_score, 'pred_label': pred_label})
-
-        # 保存数据
-        for key, val in pred_info_key_dict.items():
-            save_df = pd.DataFrame(val)
-            if key in ['lc', 'F2', 'F3', 'F4']:
-                save_df.to_csv(os.path.join(lc_pred_path, '{}_prediction.csv'.format(key)))
-            else:
-                save_df.to_csv(os.path.join(ms_pred_path, '{}_prediction.csv'.format(key)))
-
     def save_to_csv(self, output_path, data_source):
         # 保存数据到csv
         pred_output_path = os.path.join(output_path, 'prediction_output')
@@ -158,7 +129,6 @@ class PredictionScoreService(common_service.CommonService):
 
         PRED_KEY_LIST = ['lc', 'F1', 'F2', 'F3', 'ms', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15']
 
-        # seq_id_list = db_utils_run_data.query_all_seq_id()
         run_info_list = db_utils_run_data.query_run_info_all(data_source)
         seq_id_list = [d.seq_id for d in run_info_list]
         pred_info_list = db_utils_run_data.query_all_pred_info(seq_id_list)
@@ -181,16 +151,12 @@ class PredictionScoreService(common_service.CommonService):
             run_id = run_info.run_id
             save_data = {'Run_ID': run_id}
             for pred_key in PRED_KEY_LIST:
-                new_map_dict = {'F2': 'F3', 'F3': 'F4', 'F4': 'F5', 'F5': 'F6', 'F6': 'F7', 'F7': 'F8', 'F1': 'F2',
-                                'F8': 'F10', 'F9': 'F11', 'F10': 'F12', 'F11': 'F13', 'F12': 'F14', 'F13': 'F15',
-                                'F14': 'F16', 'F15': 'F17', 'lc': 'lc', 'ms': 'ms'}
-                old_pred_key = new_map_dict[pred_key]
-                if run_info.file_type != 'D' and old_pred_key == 'F17':
+                if run_info.file_type != 'D' and pred_key == 'F15':
                     save_data[str(pred_key) + '_score'] = '-'
                     save_data[str(pred_key)] = '-'
                 else:
-                    save_data[str(pred_key) + '_score'] = seq_pred_score_dict[run_info.seq_id][old_pred_key]
-                    save_data[str(pred_key)] = seq_pred_label_dict[run_info.seq_id][old_pred_key]
+                    save_data[str(pred_key) + '_score'] = seq_pred_score_dict[run_info.seq_id][pred_key]
+                    save_data[str(pred_key)] = seq_pred_label_dict[run_info.seq_id][pred_key]
             save_data_list.append(save_data)
         save_df = pd.DataFrame(save_data_list)
         save_df.to_csv(os.path.join(pred_output_path, 'prediction.csv'), mode='w+')

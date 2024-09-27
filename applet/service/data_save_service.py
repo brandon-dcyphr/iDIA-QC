@@ -2,6 +2,8 @@ import os.path
 import uuid
 
 import pandas as pd
+import pickle
+import numpy as np
 
 from applet.db import db_utils_run_data
 from applet.obj.DBEntity import RunInfo, RunData, RunDataF4, RunDataS7
@@ -9,6 +11,15 @@ from applet.obj.Entity import FileInfo, FileTypeEnum
 from applet.obj.PeptInfo import f_3_pept_list, f_15_16_pept_list
 from applet.service import common_service
 
+sequence_gravy_dict = {'LSVLLLER': 1.325, 'LYDNLLEQNLIR': -0.3, 'TGQAAGFSYTDANK': -0.75, 'FDDGAGGDNEVQR': -1.376923077,
+                       'DLQNVNITLR': -0.29, 'TKPYIQVDIGGGQTK': -0.706666667, 'FGLGSIAGAVGATAVYPIDLVK': 1.172727273,
+                       'LAANAFLAQR': 0.61, 'GGENIYPAELEDFFLK': -0.35, 'LSISGNYNLK': -0.21,
+                       'GANAVGYTNYPDNVVFK': -0.270588235, 'LGPNEQYK': -1.7375, 'FAELAQIYAQR': 0.018181818,
+                       'TFESLVDFCK': 0.37, 'AVSNVIASLIYAR': 1.207692308, 'FYSVNVDYSK': -0.39,
+                       'SETAPAAPAAPAPAEK': -0.3875, 'LEAALADVPELAR': 0.476923077, 'IEDVTPIPSDSTR': -0.615384615,
+                       'LTITYGPK': -0.0375, 'SVGEVMAIGR': 0.7, 'IALGIPLPEIK': 1.081818182, 'AGLQFPVGR': 0.244444444,
+                       'LLLPGELAK': 0.844444444, 'AIAEELAPER': -0.29, 'FLEEATR': -0.542857143, 'MPEFYNR': -1.385714286,
+                       'LFAEAVQK': 0.4375, 'IMGTSPLQIDR': -0.027272727}
 
 class DataSaveService(common_service.CommonService):
 
@@ -131,6 +142,14 @@ class DataSaveService(common_service.CommonService):
 
     # 保存至db
 
+    def calc_delt_rt(self, str_seq, diann_rt):
+        # △RT (predict RT- DIA-NN RT)
+        with open('resource/model/T.pkl', mode='rb') as f:
+            model_data = pickle.load(f)
+        org_vaa = np.array(sequence_gravy_dict.get(str_seq)).reshape(-1, 1)
+        pred_rt = model_data.predict(org_vaa).tolist()[0]
+        return pred_rt - diann_rt
+
     def read_f3_f15_f16(self, file_info):
         logger = self.logger
         logger.info('Start read f3')
@@ -144,19 +163,25 @@ class DataSaveService(common_service.CommonService):
         df = df.sort_values(by='Precursor.Quantity', ascending=False, ignore_index=True)
         f3_df = df[df['Stripped.Sequence'].isin(f_3_pept_list)]
         f15_16_df = df[df['Stripped.Sequence'].isin(f_15_16_pept_list)]
-        exist_pept_name = []
-        for index, row in f3_df.iterrows():
-            pept_name = str(row['Stripped.Sequence'])
-            if pept_name in exist_pept_name:
-                continue
-            exist_pept_name.append(pept_name)
-            rt = round(float(row['RT']), 2)
+
+        f3_df_new = f3_df[
+            (f3_df['Precursor.Charge'] == 2) & (~f3_df['Precursor.Id'].str.contains('(UniMod:35)'))]
+        exist_seq_data = {}
+        for iii, each_row in f3_df_new.iterrows():
+            str_seq = each_row['Stripped.Sequence']
+            diann_rt = each_row['RT']
+            exist_seq_data[str_seq] = diann_rt
+
+        for each_f3_seq in f_3_pept_list:
+            diann_rt = exist_seq_data.get(each_f3_seq)
+            if diann_rt is None:
+                diann_rt = 0
+            deltra_rt = self.calc_delt_rt(each_f3_seq, diann_rt)
             run_data_s7 = RunDataS7()
             run_data_s7.seq_id = self.run_name_seq_dict[run_name]
-            run_data_s7.run_name = run_name
             run_data_s7.data_tag = 3
-            run_data_s7.pept = pept_name
-            run_data_s7.data_val = rt
+            run_data_s7.pept = each_f3_seq
+            run_data_s7.data_val = deltra_rt
             f3_data_list.append(run_data_s7)
 
         exist_pept_name = []
@@ -256,7 +281,7 @@ class DataSaveService(common_service.CommonService):
             data_list.append(run_data_55)
             data_list.append(run_data_56)
 
-            for ii in range(1, 6):
+            for ii in range(1, 7):
                 data_5_0 = str(row['+' + str(ii)])
                 run_data_50 = RunData()
                 run_data_50.seq_id = self.run_id_seq_dict[run_id]
@@ -330,11 +355,10 @@ class DataSaveService(common_service.CommonService):
         main_file_abs_path = os.path.join(file_info.diann_result_stats_file_path)
         df = pd.read_csv(main_file_abs_path, sep='\t')
         for index, row in df.iterrows():
-            f9_val = round(float(row['FWHM.Scans']), 2)
+            f9_val = float(row['FWHM.Scans'])
             run_data = RunData()
             run_data.seq_id = self.run_name_seq_dict[run_name]
             run_data.data_tag = 9
-            run_data.pept = None
             run_data.data_val = f9_val
             data_list.append(run_data)
 
