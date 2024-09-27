@@ -2,7 +2,7 @@ import os
 
 import yaml
 
-VERSION = 'iDIA-QC 1.6.0'
+VERSION = 'iDIA-QC 1.7.0'
 
 # 读取yml配置文件
 def read_yml():
