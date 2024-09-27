@@ -80,8 +80,8 @@ def build_data(run_info, run_data_list, f4_data_list, s7_data_list):
     df_lc_data = pd.DataFrame([lc_data])
     df_ms_data = pd.DataFrame([ms_data])
 
-    df_lc_data.to_csv('test_lc_data.csv', index=False)
-    df_ms_data.to_csv('test_ms_data.csv', index=False)
+    # df_lc_data.to_csv('test_lc_data.csv', index=False)
+    # df_ms_data.to_csv('test_ms_data.csv', index=False)
 
     return df_lc_data, df_ms_data
 
