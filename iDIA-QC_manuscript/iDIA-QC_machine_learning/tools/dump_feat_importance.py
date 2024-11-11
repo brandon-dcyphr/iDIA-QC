@@ -9,9 +9,7 @@ sys.path.append('../')
 
 
 def load_models(model_dir):
-    """
-    加载文件夹下所有的模型文件，并且能够和数据集建立对应关系
-    """
+
     models = collections.defaultdict(dict)
     for name in os.listdir(model_dir):
         name = name.replace('.pkl', '')
@@ -28,9 +26,7 @@ def load_models(model_dir):
 
 
 def dump_feat_importance(models, feats_rank_dir):
-    """
-    加载模型, 输出模型重要性排序
-    """
+
     # 
     for dataset_name in models:
         for feat_name in models[dataset_name]:
@@ -44,21 +40,21 @@ def dump_feat_importance(models, feats_rank_dir):
 
     return True, 'OK'
 
-
-if __name__ == '__main__':
-    # read dataset with preprocess
-    test_type = 'mc_split'
-    task_name = 'ms'
-    exp_config = dict(\
-        model_path='../dataset/DIAQC_ML_20221221/data4xgb/models_mcsplit/',
-        feats_rank_dir='../dataset/DIAQC_ML_20221221/data4xgb/feat_ranks/', 
-        task_name=task_name,
-        test_type=test_type,
-        naratio_thre=0.3,
-        fillna_md='min',
-        label_type='vt',
-    )
-    from dotmap import DotMap
-    exp_config = DotMap(exp_config)
-    models = load_models(exp_config['model_path'])
-    dump_feat_importance(models, exp_config['feats_rank_dir'])
+#
+# if __name__ == '__main__':
+#     # read dataset with preprocess
+#     test_type = 'mc_split'
+#     task_name = 'ms'
+#     exp_config = dict(\
+#         model_path='../dataset/DIAQC_ML_20221221/data4xgb/models_mcsplit/',
+#         feats_rank_dir='../dataset/DIAQC_ML_20221221/data4xgb/feat_ranks/',
+#         task_name=task_name,
+#         test_type=test_type,
+#         naratio_thre=0.3,
+#         fillna_md='min',
+#         label_type='vt',
+#     )
+#     from dotmap import DotMap
+#     exp_config = DotMap(exp_config)
+#     models = load_models(exp_config['model_path'])
+#     dump_feat_importance(models, exp_config['feats_rank_dir'])

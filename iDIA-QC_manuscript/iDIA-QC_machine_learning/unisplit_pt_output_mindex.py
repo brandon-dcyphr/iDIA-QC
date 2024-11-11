@@ -1,6 +1,4 @@
-"""
-调用模型输出预测指标
-"""
+
 import collections
 import json
 import os
@@ -21,9 +19,7 @@ from tools import create_data, feat_trans
 
 
 def load_models(model_dir):
-    """
-    加载文件夹下所有的模型文件，并且能够和数据集建立对应关系
-    """
+
     models = collections.defaultdict(dict)
     for name in os.listdir(model_dir):
         name = name.replace('.pkl', '')
@@ -129,9 +125,6 @@ def create_test_dataset(exp_config, label_genpath, feat_dir):
 
 
 def construct_index(datasets, models, exp_config):
-    """
-    遍历训练数据集,输出指标, output to pdf file
-    """
 
     # Score_1.0
     score_1_flag = 'prediction_score_1'

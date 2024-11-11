@@ -1,6 +1,4 @@
-"""
-数据预处理、特征变换
-"""
+
 import copy
 import os
 
@@ -9,9 +7,7 @@ from sklearn.preprocessing import Normalizer, MinMaxScaler
 
 
 def preprocess_feats(in_data, conf):
-    """
-    特征数据预处理: na
-    """
+
     def nainc_clms(name):
         return True if 'labels' not in name and 'machine' not in name else False
     
@@ -38,11 +34,7 @@ def preprocess_feats(in_data, conf):
 
 
 def trans_feats(tra_dataset, test_dataset, fttrans_confs):
-    """
-    特征变换
-    trans_confs: 不同特征对应的变换不一样(手工创建), key: (trans_type, trans_function), value: feature name list
-    trans_type: fit(for dl or lr), nonfit(xgb)
-    """
+
     for (trans_type, trans_func), feat_names in fttrans_confs.items():
         if trans_type == 'nonfit':
             tra_dataset = tra_dataset.apply(lambda x: trans_func(x) if x.name in feat_names else x, axis=0)
@@ -61,18 +53,18 @@ def trans_feats(tra_dataset, test_dataset, fttrans_confs):
     
     return tra_dataset, test_dataset
 
-
-if __name__ == '__main__':
-    # generate the feature type and feature name mapping configuration
-    data_dir = ''
-    afeatf_names = [f for f in os.listdir(data_dir) if os.path.isfile(os.path.join(data_dir, f))]
-    afeatf_names = sorted(afeatf_names)
-    
-    featf_feats = {}
-    for ff_name in afeatf_names:
-        f_name = ff_name.split('_')[1]
-        featf_feats[f_name] = list(pd.read_csv(os.path.join(data_dir, ff_name)).columns)
-        
-    feat_trans_maps = {}
-    feat_trans_maps[('fit', 'normalizer')] = None
+#
+# if __name__ == '__main__':
+#     # generate the feature type and feature name mapping configuration
+#     data_dir = ''
+#     afeatf_names = [f for f in os.listdir(data_dir) if os.path.isfile(os.path.join(data_dir, f))]
+#     afeatf_names = sorted(afeatf_names)
+#
+#     featf_feats = {}
+#     for ff_name in afeatf_names:
+#         f_name = ff_name.split('_')[1]
+#         featf_feats[f_name] = list(pd.read_csv(os.path.join(data_dir, ff_name)).columns)
+#
+#     feat_trans_maps = {}
+#     feat_trans_maps[('fit', 'normalizer')] = None
         

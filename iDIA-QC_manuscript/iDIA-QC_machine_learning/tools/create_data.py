@@ -1,11 +1,4 @@
-"""
-划分训练测试数据集
-- base数据集
-- 特定机器数据集划分
 
-数据集格式:
-- LC:  feat1, feat2, ..., mv_label, proba_label, label_dist
-"""
 import os
 import sys
 import copy
@@ -89,11 +82,7 @@ def read_dataset(data_dir):
 
 
 def gen_machineid_test(indata):
-    """
-    产生机器类型id类测试数据集的枚举: 先产生一些base, 规则:
-    - 总数在0.2左右
-    - 在本类型中的数据量也小于20%(20%左右)
-    """
+
     combinations = [['D13', 'R08', 'R18', 'W06'], ['D16', 'R09', 'R18', 'W14'], ['D16', 'R12', 'R18', 'W14']]
     tratest_datas = {}
     for mcid_com in combinations:
@@ -104,16 +93,7 @@ def gen_machineid_test(indata):
 
 
 def split_iteml_dataset(mglc_featdata, mgms_featdata, label_dataset, test_size=0.2):
-    """
-    target: item level的训练
-    - combine feat and label data
-        - voting data
-        - wt data
-    - split the dataset
-        - uniform split
-        - split based machine id
-    - return: dict
-    """
+
     cv_datas = {'lc': {}, 'ms': {}}
     feat_datas = {'lc': mglc_featdata, 'ms': mgms_featdata}
 
@@ -179,13 +159,7 @@ def split_time_dataset(mglc_featdata, mgms_featdata, label_dataset, test_size=0.
 
 
 def split_mtg_dataset(mglc_featdata, mgms_featdata, label_dataset, feat_conf, test_size=0.2):
-    """
-    feat_conf: group feat(F1 ....) and related subfeature list
-    多任务学习的训练数据集合并和切分:
-    - lc
-        - feature data and label
-        - cmbfeature and label
-    """
+
     cv_datas = {'lc': {}, 'ms': {}}
     feat_datas = {'lc': mglc_featdata, 'ms': mgms_featdata}
     
@@ -208,12 +182,3 @@ def split_mtg_dataset(mglc_featdata, mgms_featdata, label_dataset, feat_conf, te
 
     return cv_datas
 
-
-
-if __name__ == '__main__':
-    # read raw dataset
-    
-    # LC dataset
-
-    # MS dataset
-    pass

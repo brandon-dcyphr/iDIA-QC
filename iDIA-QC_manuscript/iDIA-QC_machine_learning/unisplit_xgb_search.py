@@ -1,7 +1,4 @@
 
-"""
-肽段搜索
-"""
 import collections
 import json
 import os.path
