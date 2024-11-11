@@ -229,7 +229,7 @@ class MonitorLogPanel(wx.Panel):
         pass
 
 '''
-文件过滤模块
+
 '''
 class FileFilterInfoPanel(wx.Panel):
 

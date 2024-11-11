@@ -31,7 +31,7 @@ class DataInfoEventHandler(object):
         return seq_pred_dict
 
     '''
-    加载列表数据
+    
     '''
 
     def load_grid_data(self):
@@ -43,7 +43,7 @@ class DataInfoEventHandler(object):
         ins_name_list = list(set([d.inst_name for d in run_info_list]))
         ins_name_list.insert(0, 'All')
 
-        # 根据seq id查询预测结果
+        #
         seq_id_list = [d.seq_id for d in run_info_list]
         pred_seq_map = self.get_run_pred_map(seq_id_list)
 
@@ -98,11 +98,10 @@ class DataInfoEventHandler(object):
             return None
 
     '''
-    使用参数，加载列表数据
     '''
 
     def load_grid_data_with_param(self, event):
-        # 查询ins数据，
+        # ，
         run_data_type = self.get_run_data_type_checked()
 
         ins_select_id = self.data_info_panel.run_data_panel.ins_id_choice.GetSelection()
@@ -126,11 +125,11 @@ class DataInfoEventHandler(object):
         if len(run_info_list) == 0:
             return
 
-        # 根据seq id查询预测结果
+        #
         seq_id_list = [d.seq_id for d in run_info_list]
         pred_seq_map = self.get_run_pred_map(seq_id_list)
 
-        # 处理一下顺序
+        #
         run_info_list.sort(key=lambda x: x.id, reverse=False)
         ope_grid.AppendRows(len(run_info_list))
         row_index = 0
@@ -185,8 +184,6 @@ class DataInfoEventHandler(object):
             return
 
     def draw_selected(self, event):
-        # 获取选中的数据
-        # 获取选中的行
         selected_run_id = []
         run_grid = self.data_info_panel.run_data_panel.run_data_list_run_grid
         row_nums = run_grid.NumberRows
@@ -228,7 +225,7 @@ class DataInfoEventHandler(object):
             return
 
     def draw_search(self, event):
-        # 获取条件
+        #
         param_dict = {}
         output_path = self.data_info_panel.data_control_panel.pic_output_dir_text.GetValue()
         if output_path is None or len(output_path) == 0:

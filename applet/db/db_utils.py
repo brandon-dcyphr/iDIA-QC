@@ -30,11 +30,6 @@ def query_max_run_info_id():
         logger.exception('query max run info id error, %s', e)
 
 
-'''
-根据前缀查询目前最大的号码
-'''
-
-
 def query_max_run_increase_id(inst_name):
     sql = 'SELECT max(increase_id) from increase_info where run_prefix = ? '
     try:
@@ -79,10 +74,6 @@ def query_run_info_exist(run_name) -> RunInfo:
         logger.exception('query run info exist error, %s', e)
 
 
-'''
-查询run info信息
-'''
-
 
 def query_run_info(run_id) -> RunInfo:
     sql = 'SELECT ' + RUN_INFO_SELECT_SQL + ' from run_info where run_id = ? and is_delete = 0'
@@ -110,10 +101,6 @@ def query_run_info_by_file_name(file_name, source) -> RunInfo:
         logger.exception('query run info exist error, %s', e)
 
 
-'''
-查询等待预测的记录
-'''
-
 
 def query_wait_predict_record() -> [RunInfo]:
     sql = 'SELECT ' + RUN_INFO_SELECT_SQL + ' from run_info where state = 0 and is_delete = 0'
@@ -132,11 +119,11 @@ def query_wait_predict_record() -> [RunInfo]:
     return result_list
 
 
-# 更新所有的记录都为预测
+#
 def update_all_run_data_no_pred():
     try:
         c = conn.cursor()
-        # 删除之前的所有记录
+        #
         update_sql = 'update run_info set state = 0 where is_delete = 0'
         c.execute(update_sql)
         conn.commit()
@@ -155,12 +142,6 @@ def update_selected_run_data_no_pred(selected_run_id_list):
         logger.exception('update_selected_run_data_no_pred error, %s', e)
 
 
-'''
-更新预测结果
-1、更新run_info的state=1
-2、插入预测结果记录
-'''
-
 
 def update_pred_result(run_info: RunInfo, pred_info_list: [PredInfo]):
     try:
@@ -168,14 +149,14 @@ def update_pred_result(run_info: RunInfo, pred_info_list: [PredInfo]):
         seq_id = run_info.seq_id
 
         c = conn.cursor()
-        # 删除之前的所有记录
+        #
         delete_sql = 'delete from pred_result where run_id = ?'
         c.execute(delete_sql, [run_id])
 
-        # 更新记录
+        #
         update_sql = 'update run_info set state = 1 where run_id = ? and seq_id = ? '
         c.execute(update_sql, [run_id, seq_id])
-        # 插入预测记录
+        #
         save_pred_info_sql = 'insert into pred_result(run_id, seq_id, pred_key, pred_score, pred_label) values (?, ?, ?, ?, ?) '
         batch_insert_run_info_list = []
         for pred_info in pred_info_list:

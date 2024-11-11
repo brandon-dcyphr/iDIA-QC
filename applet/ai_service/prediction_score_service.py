@@ -31,9 +31,6 @@ class PredictionScoreService(common_service.CommonService):
         self.models = self.load_models()
 
     def load_models(self):
-        """
-        加载文件夹下所有的模型文件，并且能够和数据集建立对应关系
-        """
         models = collections.defaultdict(dict)
         try:
             if self.logger:
@@ -63,7 +60,7 @@ class PredictionScoreService(common_service.CommonService):
         self.send_msg(0, '{} Predicting the LC-MS performance by the machine learning model'.format(self.get_now_use_time()))
         self.send_msg(9, '{} Processing'.format(self.get_now_use_time()))
         save_pred_info_list = []
-        # 开始ai预测
+        #
         for thiz_save_data in save_data_list:
             run_info = thiz_save_data[0]
             run_data_list = thiz_save_data[1]
@@ -122,7 +119,7 @@ class PredictionScoreService(common_service.CommonService):
         return pred_info_list
 
     def save_to_csv(self, output_path, data_source):
-        # 保存数据到csv
+        #
         pred_output_path = os.path.join(output_path, 'prediction_output')
         if not os.path.exists(pred_output_path):
             os.mkdir(pred_output_path)
@@ -132,7 +129,7 @@ class PredictionScoreService(common_service.CommonService):
         run_info_list = db_utils_run_data.query_run_info_all(data_source)
         seq_id_list = [d.seq_id for d in run_info_list]
         pred_info_list = db_utils_run_data.query_all_pred_info(seq_id_list)
-        # 按照key分组
+        #
         seq_pred_label_dict = collections.defaultdict(dict)
         seq_pred_score_dict = collections.defaultdict(dict)
         for pred_info in pred_info_list:
@@ -145,7 +142,7 @@ class PredictionScoreService(common_service.CommonService):
             seq_pred_label_dict[pred_info.seq_id][pred_info.pred_key] = pred_label
             seq_pred_score_dict[pred_info.seq_id][pred_info.pred_key] = pred_info.pred_score
 
-        # 遍历构建save data
+        #
         save_data_list = []
         for run_info in run_info_list:
             run_id = run_info.run_id

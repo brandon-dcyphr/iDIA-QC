@@ -31,7 +31,6 @@ class AnalysisMonitorThread(Thread):
     def __init__(self, monitor_dir_list, inst_name, run_prefix, scan_time, interval_time, msconvert_path, diann_path,
                  output_path,
                  model_dir_path, notify_email, wx_token, file_filter_size, filter_type, filter_file_name):
-        # 线程实例化时立即启动
         Thread.__init__(self)
         self.monitor_dir_list = monitor_dir_list
         logger_path, logger = logger_utils.get_current_logger()
@@ -52,7 +51,6 @@ class AnalysisMonitorThread(Thread):
             self.file_filter_size = 0
         else:
             self.file_filter_size = int(file_filter_size)
-        # 1、白名单，2、黑名单
         self.filter_type = filter_type
         self.filter_file_name_list = self.format_filter_name(filter_file_name)
 
@@ -76,13 +74,10 @@ class AnalysisMonitorThread(Thread):
             logger = self.logger
             try:
                 time.sleep(self.scan_time)
-                # 检查路径下所有的文件
                 self.send_msg('Start scan path: {}'.format(self.monitor_dir_list))
                 file_list = self.recursive_scanning()
-                # 过滤文件名，及文件大小
                 file_list = self.filter_file_list(file_list)
                 file_list = list(set(file_list))
-                # 检查文件的最后修改时间是否是10分钟外
                 wait_deal_file = self.check_wait_deal_file(file_list)
                 self.send_msg('There is {} files wait to deal'.format(len(wait_deal_file)))
                 if len(wait_deal_file) == 0:
@@ -103,8 +98,6 @@ class AnalysisMonitorThread(Thread):
                         self.send_msg('deal file: {} exception'.format(file_path))
                         logger.exception('deal file: {} exception'.format(file_path))
 
-                # 等这一批处理完了再发送邮件
-                # 删除temp文件
 
                 notify_service = NotifyService(self.notify_email, self.wx_token, self.output_path, notify_file_list, self.logger,
                                                pub_channel='monitor_log')
@@ -121,7 +114,6 @@ class AnalysisMonitorThread(Thread):
     def delete_temp_file(self):
         logger = self.logger
         logger.info('Start clear temp mzXML file.')
-        # 找到mzml的目录
         temp_mzml_dir = os.path.join(self.output_path, 'mzXML')
         shutil.rmtree(temp_mzml_dir)
         logger.info('Clear temp mzXML file over.')
@@ -146,17 +138,6 @@ class AnalysisMonitorThread(Thread):
             wait_deal_file.append(file_info)
         return wait_deal_file
 
-    '''
-        1、查看文件的最后修改时间是否超过指定限制
-            1.1、不超过，就直接结束
-            1.2、超过，进入下一步
-        2、查看数据库中是否有记录
-            2.1、有记录，查看最后修改时间，文件大小是否一致
-                2.1.1、一致，直接结束
-                2.1.2、不一致，下一步
-            2.2、无记录，下一步
-        3、开始进行分析
-    '''
 
     def process_one_file(self, file_name, file_abs_path):
         info_msg = AnalysisInfoMsg(0, 0, 'Start deal file {}'.format(file_abs_path))
@@ -248,15 +229,7 @@ class AnalysisMonitorThread(Thread):
         data_save_deal_service.f11_file_path = s6_deal_service.ms2_org_area_file_path
         delete_run_info, save_data_list = data_save_deal_service.build_save_data()
 
-        # 开始ai预测
-        # thiz_save_data = save_data_list[0]
-        # run_info = thiz_save_data[0]
-        # run_data_list = thiz_save_data[1]
-        # f4_data_list = thiz_save_data[2]
-        # s7_data_list = thiz_save_data[3]
         pred_info_list = self.pre_score_service.deal_prediction_score(save_data_list)
-        # pred_info_list = self.pre_score_service.prediction_all_score(run_info, run_data_list, f4_data_list,
-        #                                                              s7_data_list)
 
         save_result = data_save_deal_service.deal_data_save(delete_run_info, save_data_list, pred_info_list)
         if not save_result:
@@ -271,7 +244,6 @@ class AnalysisMonitorThread(Thread):
         if not draw_result:
             pic_deal_service.send_msg(3, msg='Draw result error, skip. {}'.format(file_abs_path))
 
-        # 查询数据，保存
         data_save_deal_service.send_msg(9, msg='Start save to csv')
         self.pre_score_service.save_to_csv(self.output_path, 1)
         data_save_deal_service.send_msg(9, msg='End deal file {}'.format(file_abs_path))
@@ -307,9 +279,6 @@ class AnalysisMonitorThread(Thread):
                 return True
         return False
 
-    '''
-        递归扫描文件夹，找出所有的raw，d，wiff文件
-    '''
 
     def recursive_scanning(self):
         file_list = []
@@ -342,10 +311,6 @@ class AnalysisMonitorThread(Thread):
         file_list = self.filter_file_size(file_list)
         return file_list
 
-    '''
-    文件大小过滤
-    '''
-
     def filter_file_size(self, file_list):
         file_size_limit = self.file_filter_size
         if file_size_limit == 0:
@@ -359,10 +324,6 @@ class AnalysisMonitorThread(Thread):
             new_file_list.append(file_info)
         return new_file_list
 
-    '''
-    文件名过滤
-    1、先格式化处理过滤名称
-    '''
 
     def deal_filter_file_name(self, file_list):
         if len(self.filter_file_name_list) == 0:
@@ -374,10 +335,6 @@ class AnalysisMonitorThread(Thread):
         else:
             return file_list
 
-    '''
-    白名单过滤
-    包含的保留
-    '''
 
     def white_filter(self, file_list):
         new_file_list = []
@@ -389,10 +346,6 @@ class AnalysisMonitorThread(Thread):
                     break
         return new_file_list
 
-    '''
-    黑名单过滤
-    包含的去除
-    '''
 
     def black_filter(self, file_list):
         remove_list = self.white_filter(file_list)

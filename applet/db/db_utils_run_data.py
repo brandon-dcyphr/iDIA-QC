@@ -19,7 +19,7 @@ F4_RUN_DATA_SELECT_COL = 'seq_id, data_index, data_val'
 S7_RUN_DATA_SELECT_COL = 'seq_id, data_tag, pept, data_val'
 
 
-# 插入一条记录
+#
 def add_run_info(run_info: RunInfo):
     sql = 'insert into run_info(inst_id, run_id, run_name, file_name, file_type, is_delete) values (?, ?, ?, ?, ?, ?) '
     try:
@@ -30,7 +30,7 @@ def add_run_info(run_info: RunInfo):
         logger.exception('add run info error')
 
 
-# 保存该批次的全部数据
+#
 def add_thiz_data(delete_run_name, save_run_info: [RunInfo], save_run_data_list: [RunData],
                   save_run_data_f4: [RunDataF4], save_run_data_s7: [RunDataS7], pred_info_list: [PredInfo]):
     try:
@@ -48,21 +48,21 @@ def add_thiz_data(delete_run_name, save_run_info: [RunInfo], save_run_data_list:
             batch_insert_run_info_list.append(dd.get_key_val())
         c.executemany(save_run_info_sql, batch_insert_run_info_list)
 
-        # 插入run data
+        #
         save_run_data_sql = 'insert into run_data (seq_id, data_tag, data_val) values (?, ?, ?) '
         batch_insert_run_data_list = []
         for dd in save_run_data_list:
             batch_insert_run_data_list.append(dd.get_key_val())
         c.executemany(save_run_data_sql, batch_insert_run_data_list)
 
-        # 插入 run data f4
+        #
         save_run_data_f4_sql = 'insert into run_data_f4 (seq_id, data_index, data_val) values (?, ?, ?) '
         batch_insert_run_data_f4_list = []
         for dd in save_run_data_f4:
             batch_insert_run_data_f4_list.append(dd.get_key_val())
         c.executemany(save_run_data_f4_sql, batch_insert_run_data_f4_list)
 
-        # 插入s7 data
+        #
         save_run_data_s7_sql = 'insert into run_data_s7 (seq_id, data_tag, pept, data_val) values (?, ?, ?, ?) '
         batch_insert_run_data_s7_list = []
         for dd in save_run_data_s7:
@@ -296,10 +296,6 @@ def query_all_pred_info(seq_id_list) -> [PredInfo]:
     return pred_info_list
 
 
-'''
-转换 run data
-'''
-
 
 def convert_run_data(row):
     run_data = RunData()
@@ -308,10 +304,6 @@ def convert_run_data(row):
     run_data.data_val = row[2]
     return run_data
 
-
-'''
-转换F4数据
-'''
 
 
 def convert_run_f4_data(row):

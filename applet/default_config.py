@@ -55,7 +55,6 @@ class Setting(object):
     def load_config():
         logger.info('load config')
         conf = configparser.ConfigParser()
-        # 检查当前目录下是否有config.ini文件
         run_path = os.getcwd()
         custom_config_path = os.path.join(run_path, 'config.ini')
         logger.info('load config, custom config path is exist. custom_config_path is: {}'.format(custom_config_path))

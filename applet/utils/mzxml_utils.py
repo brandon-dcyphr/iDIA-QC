@@ -1,12 +1,10 @@
 from pyteomics import mzxml, mzml
 
 
-# 获取质谱文件仪器型号名称
 def read_ms_info(mzxml_path):
     return read_mzml(mzxml_path)
 
 
-# 读取mzzml文件，获取仪器名称
 def read_mzxml(mzxml_path):
     rawdata_reader = mzxml.iterfind(mzxml_path, 'msRun/msInstrument/msModel')
     ms_model = 'DEFAULT'
@@ -49,8 +47,8 @@ def read_mzml(mzxml_path):
     return ins_id, ms_model
 
 
-mzml_process = mzml.MzML('E:\data\guomics\gaohuanhuan\\10\mzXML\\A20201013xiangn_ml_30min_DIA.mzML')
-mmm = mzml_process.get_by_id('IC1')
-print(str(mmm.get('instrument serial number')))
+# mzml_process = mzml.MzML('E:\data\guomics\gaohuanhuan\\10\mzXML\\A20201013xiangn_ml_30min_DIA.mzML')
+# mmm = mzml_process.get_by_id('IC1')
+# print(str(mmm.get('instrument serial number')))
 # read_ms_info('E:\data\guomics\gaohuanhuan\\10\mzXML\A20201013xiangn_ml_30min_DIA.mzML')
 

@@ -39,7 +39,7 @@ class S4Service(common_service.CommonService):
             #                                                                                                     run_file_list)) / float(
             #                                                                                             1024 * 1024))))
 
-            # 单线程
+            #
             for run_file_parameter in run_file_list:
                 # self.send_msg(9, 'Deal S4 process, handle_a_mzxml start, file_tag is: {}'.format(
                 #     run_file_parameter.run_name))

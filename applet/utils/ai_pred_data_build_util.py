@@ -17,7 +17,6 @@ def build_data(run_info, run_data_list, f4_data_list, s7_data_list):
 
     lc_pred_data = {}
     ms_pred_data = {}
-    # 构建F3, F15, F16数据
     for s7_data in s7_data_list:
         data_tag = s7_data.data_tag
         data_val = float(s7_data.data_val)
@@ -65,7 +64,6 @@ def build_data(run_info, run_data_list, f4_data_list, s7_data_list):
 
     ms_pred_data['Ratio of MS1.MS2_F10'] = round(float(f8_val) / float(f11_val), 2)
 
-    # 再增加D,R,W
     lc_pred_data['D'] = d_flag
     lc_pred_data['R'] = r_flag
     lc_pred_data['W'] = w_flag
@@ -80,8 +78,6 @@ def build_data(run_info, run_data_list, f4_data_list, s7_data_list):
     df_lc_data = pd.DataFrame([lc_data])
     df_ms_data = pd.DataFrame([ms_data])
 
-    # df_lc_data.to_csv('test_lc_data.csv', index=False)
-    # df_ms_data.to_csv('test_ms_data.csv', index=False)
 
     return df_lc_data, df_ms_data
 

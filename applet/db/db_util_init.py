@@ -1,23 +1,6 @@
 
 def init_sql(conn):
-    '''
-    表信息说明：
-    inst_info：
-        存储的是仪器信息
 
-    run_data：
-        存储的是，F5, F6, F7, F8, F10, F11, F13, F14, F17的数据，根据data_tag区分
-        需要注意的是由于F5中有三类数据，所以data_tag： 52代表F5的 +2_percent，以此类推
-
-    run_data_f4：
-        存储的是F4的数据，按照data_index序号区分
-
-    run_data_s7：
-        存储的是F1, F2, F3, F9, F15, F16的数据
-
-    run_info：
-        存储的跑的文件数据
-    '''
     cursor = conn.cursor()
     sql_create_inst_info = '''
     CREATE TABLE if not exists "inst_info" (
@@ -144,7 +127,6 @@ def init_sql(conn):
     cursor.execute(sql_create_pred_result)
     cursor.execute(sql_create_increase_info)
 
-    '''創建索引'''
     try:
         cursor.execute(create_run_info_index_sql1)
     except Exception:

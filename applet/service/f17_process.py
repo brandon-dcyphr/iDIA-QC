@@ -1,4 +1,4 @@
-# F17处理.d文件的脚本
+
 import os.path
 
 import numpy as np

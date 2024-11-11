@@ -17,7 +17,6 @@ class DiannAnalysisService(common_service.CommonService):
         common_service.CommonService.__init__(self, base_output_path, file_list, logger, step, pub_channel, start_time)
         self.diann_path = diann_path
 
-    # 处理转换
     def deal_process(self):
         logger = self.logger
         try:
@@ -68,7 +67,6 @@ class DiannAnalysisService(common_service.CommonService):
                 logger.info(
                     'end diann analysis one, {}/{}'.format(file_info.file_name, deal_count, len(self.file_list)))
                 if os.path.exists(file_info.diann_temp_file_path):
-                    # 移动文件到result目录下
                     logger.info('copy result file, diann_temp_file_path is: {}, target file path is: {}'.format(
                         file_info.diann_temp_file_path, file_info.diann_result_file_path))
                     # os.system(result_file_mv_cmd)
@@ -86,7 +84,6 @@ class DiannAnalysisService(common_service.CommonService):
                                   msg='DIA-NN error, result file is not exist, file name is: {}, temp file path is: {}'.format(
                                       file_info.file_name, file_info.diann_temp_file_path))
                     return False
-            # 检测是否都已经处理完成了
             self.send_msg(1, msg='DIA-NN exited.')
             return True
         except Exception as e:
@@ -96,7 +93,6 @@ class DiannAnalysisService(common_service.CommonService):
         finally:
             self.is_running = False
 
-    # 处理一个分析
     def deal_one_diann(self, file_info: FileInfo):
         logger = self.logger
         file_type = file_info.file_type
@@ -109,7 +105,6 @@ class DiannAnalysisService(common_service.CommonService):
                 'file type is error, file name is: {}, file_type is: {}'.format(file_info.file_name, file_type))
             return None
 
-        # 如果是raw和wiff，就使用mzml的地址
         if file_type == FileTypeEnum.RAW or file_type == FileTypeEnum.WIFF:
             org_file_path = file_info.mzML_file_path
         elif file_type == FileTypeEnum.D:
@@ -124,7 +119,6 @@ class DiannAnalysisService(common_service.CommonService):
 
         self.diann_analysis_one(cmd, file_info)
 
-    # 处理一个分析流程
     def diann_analysis_one(self, cmd, file_info: FileInfo):
         logger = self.logger
         logger.info('diann analysis one, file name is: {}, cmd is: {}'.format(file_info.file_name, cmd))
@@ -138,14 +132,12 @@ class DiannAnalysisService(common_service.CommonService):
                 break
             logger.info(output)
             if output:
-                # 将字节形式的输出转换为字符串形式
                 info_msg = output.decode('utf-8')
                 info_msg = info_msg.rstrip()
                 if len(info_msg) == 0:
                     continue
                 if 'files will be processed' in info_msg:
                     info_msg = info_msg + ' separately.'
-                # 增加一个处理，如果msg是以时间开头的，那么就得把时间去掉
                 if '] ' in info_msg:
                     info_msg = info_msg[info_msg.index('] ') + 2:]
                 self.send_msg(9, msg='{}'.format(info_msg), with_time=True)

@@ -22,7 +22,7 @@ version_font = wx.Font()
 
 wx_notify_token = ''
 
-# 如果setting中的font信息存在，那么就使用pkl的，否则就使用配置文件中的
+#
 if setting_info:
     default_font = setting_info[0]
     wx_notify_token = setting_info[1]

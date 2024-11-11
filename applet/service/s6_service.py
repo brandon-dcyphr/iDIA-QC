@@ -26,7 +26,7 @@ class S6Service(common_service.CommonService):
         self.ms1_under_chazi_file_path = os.path.join(self.s6_output_path, output_file_S6_ms1_under_chazi)
         self.ms2_under_chazi_file_path = os.path.join(self.s6_output_path, output_file_S6_ms2_under_chazi)
 
-    # S5的插值计算，是进行了两段的筛选
+    #
     def deal_process(self):
         logger = self.logger
         try:
@@ -42,19 +42,19 @@ class S6Service(common_service.CommonService):
             df_run = list(ms_file_x['Run name'])
             ms_file_x['file'] = df_run
 
-            # 计算ms1插值
+            #
             logger.info('start deal S6 process, calc_ms1_chazi')
             # self.send_msg(9, 'Start deal S6 process, calc ms1 chazi')
             calc_ms1_chazi(ms_file_x, self.file_list, self.ms1_chazi_file_path)
             self.send_msg(9, '{} Finished the linear interpolation of MS1'.format(self.get_now_use_time()))
 
-            # 计算ms2插值
+            #
             logger.info('start deal S6 process, calc_ms2_chazi')
             # self.send_msg(9, 'Start deal S6 process, calc ms2 chazi')
             calc_ms2_chazi(ms_file_x, self.file_list, self.ms2_chazi_file_path)
             self.send_msg(9, '{} Finished the linear interpolation of MS2'.format(self.get_now_use_time()))
 
-            # 计算面积
+            #
             logger.info('start deal S6 process, calc_ms1_org_area')
             # self.send_msg(9, 'Start deal S6 process, calc ms1 org area')
             calc_ms1_org_area(ms_file_x, self.file_list, self.ms1_org_area_file_path)
@@ -65,7 +65,7 @@ class S6Service(common_service.CommonService):
             calc_ms2_org_area(ms_file_x, self.file_list, self.ms2_org_area_file_path)
             self.send_msg(9, '{} Calculating the MS2 area'.format(self.get_now_use_time()))
 
-            # 计算插值后
+            #
             logger.info('start deal S6 process, under_calc_ms1_chazi')
             # self.send_msg(9, 'Start deal S6 process, under calc ms1 chazi')
             under_calc_ms1_chazi(ms_file_x, self.file_list, self.ms1_chazi_file_path, self.ms1_under_chazi_file_path)
@@ -83,7 +83,7 @@ class S6Service(common_service.CommonService):
             self.is_running = False
 
 
-# 計算ms1插值
+#
 def calc_ms1_chazi(ms_file_x, file_list: [FileInfo], ms1_chazi_file_path):
     all_data = pd.DataFrame()
     for run_info in file_list:
@@ -99,9 +99,9 @@ def calc_ms1_chazi(ms_file_x, file_list: [FileInfo], ms1_chazi_file_path):
         Y = np.array(file_tmp['totIonCurrent'])
 
         new_x = np.arange(min(X), max(X), ((max(X) - min(X))) / 1000)
-        # 进行三次样条拟合
-        ipo1 = spi.splrep(X, Y, k=1)  # 样本点导入，生成参数
-        iy1 = spi.splev(new_x, ipo1)  # 根据观测点和样条参数，生成插值
+        #
+        ipo1 = spi.splrep(X, Y, k=1)
+        iy1 = spi.splev(new_x, ipo1)
         iy_tmp = pd.DataFrame(iy1, columns=[run_info.run_name])
         all_data = pd.concat([all_data, iy_tmp], axis=1)
 
@@ -109,7 +109,7 @@ def calc_ms1_chazi(ms_file_x, file_list: [FileInfo], ms1_chazi_file_path):
     return ms1_chazi_file_path
 
 
-# 計算ms2插值
+#
 def calc_ms2_chazi(ms_file_x, file_list: [FileInfo], ms2_chazi_file_path):
     all_data = pd.DataFrame()
     for run_info in file_list:
@@ -123,9 +123,9 @@ def calc_ms2_chazi(ms_file_x, file_list: [FileInfo], ms2_chazi_file_path):
             [((i - min(tmp_x)) / (max(tmp_x) - min(tmp_x))) * 9999 for i in tmp_x])
         Y = np.array(file_tmp['totIonCurrent'])
         new_x = np.arange(min(X), max(X), ((max(X) - min(X))) / 10000)
-        # 进行三次样条拟合
-        ipo1 = spi.splrep(X, Y, k=1)  # 样本点导入，生成参数
-        iy1 = spi.splev(new_x, ipo1)  # 根据观测点和样条参数，生成插值
+        #
+        ipo1 = spi.splrep(X, Y, k=1)  #
+        iy1 = spi.splev(new_x, ipo1)  #
         iy_tmp = pd.DataFrame(iy1, columns=[run_info.run_name])
         all_data = pd.concat([all_data, iy_tmp], axis=1)
 
@@ -133,7 +133,7 @@ def calc_ms2_chazi(ms_file_x, file_list: [FileInfo], ms2_chazi_file_path):
     return ms2_chazi_file_path
 
 
-# 计算原始面积MS1
+#
 def calc_ms1_org_area(ms_file_x, file_list: [FileInfo], ms1_org_area_file_path):
     all_ms1_area = pd.DataFrame(index=[d.run_name for d in file_list])
     all_ms1_area.index.name = 'Run_name'
@@ -152,7 +152,7 @@ def calc_ms1_org_area(ms_file_x, file_list: [FileInfo], ms1_org_area_file_path):
     all_ms1_area.to_csv(ms1_org_area_file_path)
 
 
-# 计算原始面积MS2
+#
 def calc_ms2_org_area(ms_file_x, file_list: [FileInfo], ms2_org_area_file_path):
     all_ms2_area = pd.DataFrame(index=[d.run_name for d in file_list])
     all_ms2_area.index.name = 'Run_name'
@@ -172,7 +172,7 @@ def calc_ms2_org_area(ms_file_x, file_list: [FileInfo], ms2_org_area_file_path):
     all_ms2_area.to_csv(ms2_org_area_file_path)
 
 
-# 計算ms1插值後
+#
 def under_calc_ms1_chazi(ms_file_x, file_list: [FileInfo], ms1_chazi_file_path, ms1_under_chazi_file_path):
     all_data = pd.read_csv(ms1_chazi_file_path)
     area = pd.DataFrame(columns=['Run_name', 'Area'])

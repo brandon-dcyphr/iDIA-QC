@@ -64,7 +64,6 @@ y_num_format_jscode = JsCode('''
     }
     ''')
 
-# 整数类型格式化
 y_integer_num_format_jscode = JsCode('''
     function (value) {
         if (Math.abs(value) > 100000) {
@@ -302,13 +301,10 @@ class PicService(common_service.CommonService):
             shutil.rmtree(self.pic_save_path)
         os.makedirs(self.pic_save_path)
 
-    # 画图
     def draw_pic_select(self):
-        # 从数据库中获取数据
         logger = self.logger
         try:
             self.is_running = True
-            # 要保证顺序，下面的顺序要和seq的顺序一致
             run_info_list = db_utils_run_data.query_run_info_list(self.run_id_list)
             self.draw_by_run_info_list('Selected-', run_info_list)
             return True
@@ -319,7 +315,7 @@ class PicService(common_service.CommonService):
             self.is_running = False
 
     def draw_pic_param(self, search_param):
-        # 从数据库中获取数据
+        #
         #
         logger = self.logger
         try:
@@ -329,12 +325,12 @@ class PicService(common_service.CommonService):
             search_num = search_param['search_num']
             run_data_type = search_param['run_data_type']
             run_info_list_all = db_utils_run_data.query_run_info_param(inst_name, search_num, run_data_type)
-            # 处理一下顺序
+            #
             run_info_list_all.sort(key=lambda x: x.id, reverse=False)
             if len(run_info_list_all) == 0:
                 logger.info('Draw no data, ins_name = {}, search_num = {}'.format(inst_name, search_num))
                 return True
-            # 按照 run_prefix分组
+            #
             for run_info in run_info_list_all:
                 inst_id_info_dict.setdefault(run_info.run_prefix, []).append(run_info)
 
@@ -350,7 +346,7 @@ class PicService(common_service.CommonService):
             self.is_running = False
 
     def draw_pic_all(self, source):
-        # 从数据库中获取数据
+        #
         #
         logger = self.logger
         try:
@@ -358,7 +354,7 @@ class PicService(common_service.CommonService):
             self.is_running = True
             inst_id_info_dict = {}
             run_info_list_all = db_utils_run_data.query_run_info_all(source)
-            # 按照 run_prefix分组
+            #
             for run_info in run_info_list_all:
                 inst_id_info_dict.setdefault(run_info.run_prefix, []).append(run_info)
 
@@ -375,7 +371,7 @@ class PicService(common_service.CommonService):
             self.is_running = False
 
     def draw_by_run_info_list(self, run_prefix, run_info_list):
-        # 查询 run data
+        #
         seq_id_list = []
         run_id_list = []
         d_file_run_id_list = []
@@ -393,7 +389,7 @@ class PicService(common_service.CommonService):
         for dd in run_data_list:
             seq_fn_data_dict['{}_{}'.format(dd.seq_id, dd.data_tag)] = dd.data_val
 
-        # 使用二维数组好像更方便一点
+        #
 
         data_tag_list = ['6', '7', '8', '9', '10', '11', '12', '13', '14', '51', '52', '53', '54', '55', '56',
                          '501', '502',
@@ -407,11 +403,11 @@ class PicService(common_service.CommonService):
 
         run_data_f4_list = db_utils_run_data.query_run_f4_data(seq_id_list)
         f4_data_dict = {}
-        # 只画两条线， 每条线1000个点
+        #
         for dd in run_data_f4_list:
             f4_data_dict.setdefault(seq_run_id_dict[dd.seq_id], [None] * 1000)[dd.data_index] = dd.data_val
 
-        # 按照不同的data tag分区，然后按照pept分组
+        #
         s7_seq_data_tag_dict = {}
         s7_data_list = db_utils_run_data.query_run_s7_data(seq_id_list)
         for s7_data in s7_data_list:
@@ -439,11 +435,11 @@ class PicService(common_service.CommonService):
                     s7_data_tag_dict.setdefault(pept_name, []).append(pept_val)
             s7_data_dict[data_tag] = s7_data_tag_dict
 
-        # 查询pred结果
+        #
         pred_info_dict = {}
         pred_info_list = db_utils_run_data.query_all_pred_info(seq_id_list)
         for pred_info in pred_info_list:
-            # 如果不是.d F17就没有数据
+            #
             thiz_run_id = seq_run_id_dict[pred_info.seq_id]
             if thiz_run_id not in d_file_run_id_list and pred_info.pred_key == 'F15':
                 continue
@@ -481,14 +477,14 @@ class PicService(common_service.CommonService):
 
         page.render(os.path.join(html_dir_path, run_prefix + '.html'))
 
-    # 返回ins分组的图表列表对象
+    #
     def draw_f_html(self, run_id_list, fn_data_dict: dict):
 
         echart_list = []
 
         f_tag_list = fn_data_dict.keys()
         for f_tag in f_tag_list:
-            # 20240510规定了新的tag映射，
+            # ，
             display_tag = ''
             f_data_list = fn_data_dict[f_tag]
             y_name = ''
@@ -595,7 +591,7 @@ class PicService(common_service.CommonService):
         f55_data_list = fn_data_dict["55"]
         f56_data_list = fn_data_dict["56"]
 
-        # 画F5
+        #
         line_pic = Line(init_opts)
         line_pic.index = 4
         x_list = run_id_list
@@ -650,7 +646,7 @@ class PicService(common_service.CommonService):
         line_pic.index = 3
         x_list = [str((i + 1)).zfill(3) for i in range(1, 1001)]
         line_pic.add_xaxis(x_list)
-        # N条线，每条线1000个点
+        #
         for run_id in run_id_list:
             line_pic.add_yaxis(series_name=run_id, y_axis=f4_data_dict[run_id],
                                label_opts=opts.LabelOpts(is_show=False))
@@ -754,7 +750,7 @@ class PicService(common_service.CommonService):
                                          axislabel_opts=x_axislabel_opts),
                 legend_opts=legend_style
             )
-            # pept对应的list长度是多少，就代表有几个T
+            #
             for pept in pept_list:
                 data_list = pept_data_info[pept]
                 line_pic.add_yaxis(series_name=pept, y_axis=data_list, label_opts=opts.LabelOpts(is_show=False))
@@ -772,7 +768,7 @@ class PicService(common_service.CommonService):
         return s7_echars_list
 
     '''
-    热力图
+    
     '''
 
     def draw_heat_map_html(self, run_id_list, pred_info_dict: dict):
@@ -789,7 +785,7 @@ class PicService(common_service.CommonService):
         for x_index, run_id in enumerate(run_id_list):
             xaxis_list.append(run_id)
             for y_index, pred_key in enumerate(yaxis_list):
-                # 这个顺序和上面的是对应的
+                #
                 each_val = pred_info_dict.get('{}_{}'.format(run_id, pred_key))
                 if each_val is None:
                     each_val = -1

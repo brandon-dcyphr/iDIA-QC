@@ -24,7 +24,6 @@ class MzxmlService(common_service.CommonService):
             self.send_msg(0, msg='')
             logger.info('Start deal build mzxml info process')
             # inst_info_dict = db_utils.query_inst_info()
-            # 查询最大的id作为run_id后面数据的起点
             # start_run_id = db_utils.query_max_run_info_id()
             for file_info in self.file_list:
                 if not self.run_flag:
@@ -36,7 +35,6 @@ class MzxmlService(common_service.CommonService):
                 file_info.inst_name = self.inst_name
                 file_info.run_prefix = self.run_prefix
                 file_info.run_id = build_run_id(self.run_prefix)
-                # 查询数据库中是否已经有该记录了，如果有就跳过，没有就加上，
                 # start_run_id = start_run_id + 1
                 # run_id = get_standard_run_id(standard_ins_id, start_run_id)
                 # file_info.run_id = run_id
@@ -52,7 +50,6 @@ class MzxmlService(common_service.CommonService):
             self.is_running = False
 
 
-# 构建统一标准的ins_id
 def get_standard_ins_id(file_type, ins_id):
     if file_type == FileTypeEnum.RAW:
         return 'R%02d' % ins_id
@@ -63,21 +60,17 @@ def get_standard_ins_id(file_type, ins_id):
     return ''
 
 
-# 获取标准的run name
 def get_run_name(mzxml_file):
     return mzxml_file.replace('.mzXML', '')
 
 
 def build_run_id(run_prefix):
-    # 先查询值，然后更新记录
     max_increase_id = db_utils.query_max_run_increase_id(run_prefix)
     if max_increase_id is None:
-        # 插入一条数据
         max_increase_id = 0
         db_utils.insert_run_increase_id(run_prefix, 0)
 
     thiz_increase_id = max_increase_id + 1
     run_id = '%sU%04d' % (run_prefix, thiz_increase_id)
-    # 更新回数据库
     db_utils.update_run_increase_id(run_prefix, thiz_increase_id)
     return run_id

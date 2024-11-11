@@ -41,7 +41,6 @@ class DataSaveService(common_service.CommonService):
         self.run_name_seq_dict = {}
 
     def build_run_info(self, file_info: [FileInfo]):
-        # 把已存在的记录删掉，逻辑删除
         delete_flag = False
         run_info = RunInfo()
         run_info.run_prefix = file_info.run_prefix
@@ -140,7 +139,6 @@ class DataSaveService(common_service.CommonService):
         finally:
             self.is_running = False
 
-    # 保存至db
 
     def calc_delt_rt(self, str_seq, diann_rt):
         # △RT (predict RT- DIA-NN RT)
@@ -159,7 +157,6 @@ class DataSaveService(common_service.CommonService):
         run_name = file_info.run_name
         main_file_abs_path = os.path.join(file_info.diann_result_file_path)
         df = pd.read_csv(main_file_abs_path, sep='\t')
-        # 按照Precursor.Quantity由大到小排序
         df = df.sort_values(by='Precursor.Quantity', ascending=False, ignore_index=True)
         f3_df = df[df['Stripped.Sequence'].isin(f_3_pept_list)]
         f15_16_df = df[df['Stripped.Sequence'].isin(f_15_16_pept_list)]
@@ -401,10 +398,6 @@ class DataSaveService(common_service.CommonService):
             run_data.data_val = area_val
             data_list.append(run_data)
         return data_list
-
-    '''
-    f12 = f8 / f11 (保留两位小数)
-    '''
 
     def build_f12(self, f8_data_list, f11_data_list):
         # 转为两个map

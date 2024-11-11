@@ -16,10 +16,9 @@ from applet.service import common_service
 
 common_config = common_utils.read_yml()
 
-# 配置邮箱服务器信息
-mail_host = common_config['notify']['mail_host']  # 设置服务器
-mail_user = common_config['notify']['mail_user']  # 用户名
-mail_pass = common_config['notify']['mail_pass']  # 口令是授权码，不是邮箱密码
+mail_host = common_config['notify']['mail_host']  #
+mail_user = common_config['notify']['mail_user']  #
+mail_pass = common_config['notify']['mail_pass']  #
 
 
 class NotifyService(common_service.CommonService):
@@ -30,12 +29,10 @@ class NotifyService(common_service.CommonService):
         self.notify_email = notify_email
         self.wx_token = wx_token
 
-    # 处理转换
     def deal_process(self):
         logger = self.logger
         try:
             self.send_msg(0, 'Sending the result to: {}'.format(self.notify_email), with_time=True)
-            # 查询这些文件的数据
             run_info_list, pred_info_list, run_data_list = self.query_build_data()
             self.deal_send_email(run_info_list, pred_info_list)
             self.deal_send_wx(run_info_list, pred_info_list, run_data_list)
@@ -57,11 +54,7 @@ class NotifyService(common_service.CommonService):
         return run_info_list, pred_info_list, run_data_list
 
     def message_config(self, run_info_list, pred_info_list):
-        """
-        配置邮件信息
-        :return: 消息对象
-        """
-        # 第三方 SMTP 服务
+
         lc_dict = {}
         ms_dict = {}
         for pred_info in pred_info_list:
@@ -90,10 +83,10 @@ class NotifyService(common_service.CommonService):
 
         subject_str = '\n'.join(send_data_list)
 
-        message = MIMEMultipart()  # 多个MIME对象
+        message = MIMEMultipart()
         message['From'] = 'iDIA-QC<{}>'.format(mail_user)
         message['To'] = self.notify_email
-        message['Subject'] = Header(subject_str, 'utf-8')  # 主题
+        message['Subject'] = Header(subject_str, 'utf-8')
 
         if len(run_info_list) == 1:
             content_str = 'Dear iDIA-QC user, <br/>'
@@ -105,7 +98,6 @@ class NotifyService(common_service.CommonService):
                 setting.github_url)
             content_str = content_str + 'iDIA-QC Support, iDIA-QC team'
         else:
-            # 是否是单个仪器
             if len(inst_list) == 1:
                 content_str = 'Dear iDIA-QC user, <br/>'
                 content_str = content_str + 'The MS raw files you uploaded have been analyzed. Here is a summary of the results. For detailed results and illustrations, please refer to the attached HTML file. <br/>'
@@ -121,38 +113,30 @@ class NotifyService(common_service.CommonService):
                     setting.github_url)
                 content_str = content_str + 'iDIA-QC Support, iDIA-QC team'
         content = MIMEText(content_str, 'html')
-        message.attach(content)  # 添加内容
+        message.attach(content)
         return message
 
     def send_mail(self, run_info_list, pred_info_list):
         logger = self.logger
-        """
-        发送邮件
-        :param message: 消息对象
-        :return: None
-        """
+
         receivers = self.notify_email.split(';')
         logger.info('email receivers: {}'.format(receivers))
         message = self.message_config(run_info_list, pred_info_list)
-        # # 添加Excel类型附件
-        # 添加html
+
         pic_dir_path = os.path.join(self.base_output_path, 'metric_performance_output')
         if os.path.exists(pic_dir_path):
             html_list = os.listdir(pic_dir_path)
             for html_name in html_list:
-                xlsx = MIMEApplication(open(os.path.join(pic_dir_path, html_name), 'rb').read())  # 打开Excel,读取Excel文件
-                xlsx["Content-Type"] = 'application/octet-stream'  # 设置内容类型
-                xlsx.add_header('Content-Disposition', 'attachment', filename=html_name)  # 添加到header信息
+                xlsx = MIMEApplication(open(os.path.join(pic_dir_path, html_name), 'rb').read())
+                xlsx["Content-Type"] = 'application/octet-stream'
+                xlsx.add_header('Content-Disposition', 'attachment', filename=html_name)
                 message.attach(xlsx)
-        smtpObj = smtplib.SMTP(mail_host, port=587, timeout=30)  # 使用SSL连接邮箱服务器
+        smtpObj = smtplib.SMTP(mail_host, port=587, timeout=30)
         smtpObj.starttls()
-        smtpObj.login(mail_user, mail_pass)  # 登录服务器
-        smtpObj.sendmail(mail_user, receivers, message.as_string())  # 发送邮件
-        logger.info('邮件发送成功')
+        smtpObj.login(mail_user, mail_pass)
+        smtpObj.sendmail(mail_user, receivers, message.as_string())
+        logger.info('send success')
 
-    '''
-    处理邮件发送的逻辑
-    '''
 
     def deal_send_email(self, run_info_list, pred_info_list):
         logger = self.logger
@@ -166,9 +150,6 @@ class NotifyService(common_service.CommonService):
             logger.exception('email send exception')
             self.send_msg(3, msg='Email send exception: {}'.format(e))
 
-    '''
-    处理微信发送
-    '''
 
     def deal_send_wx(self, run_info_list, pred_info_list, run_data_list):
         logger = self.logger
@@ -177,7 +158,6 @@ class NotifyService(common_service.CommonService):
             if self.wx_token is None or len(self.wx_token) == 0:
                 self.send_msg(1, msg='There is no need email to notify')
                 return True
-            # 查询这些文件的数据
             title, markdown_content = self.build_wx_msg_markdown_content(run_info_list, pred_info_list, run_data_list)
             token_list = self.wx_token.split(';')
             for token in token_list:
@@ -204,7 +184,7 @@ class NotifyService(common_service.CommonService):
 
     def build_wx_msg_markdown_content(self, run_info_list: [RunInfo], pred_info_list: [PredInfo],
                                       run_data_list: [RunData]):
-        title = 'DIA分析结束'
+        title = 'DIA analysis over'
 
         pred_dict = {}
         run_id_qual_feat_dict = {}

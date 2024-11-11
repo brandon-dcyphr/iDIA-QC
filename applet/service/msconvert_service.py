@@ -16,7 +16,6 @@ class MSConvertService(common_service.CommonService):
         common_service.CommonService.__init__(self, base_output_path, file_list, logger, step, pub_channel, start_time)
         self.msconvert_path = msconvert_path
 
-    # 处理转换
     def deal_process(self):
         logger = self.logger
         try:
@@ -50,7 +49,6 @@ class MSConvertService(common_service.CommonService):
                     logger.error('fail msconvert file {}'.format(file_info.file_name))
                     self.send_msg(3, msg='fail msconvert file {}'.format(file_info.file_name))
                     return False
-            # 检测是否都已经处理完成了
             logger.info('success msconvert, file count is: {}, mzXML_output_path is: {}'.format(len(self.file_list),
                                                                                                 mzXML_output_path))
             self.send_msg(1, msg='Finished\nmsconvert exited')
@@ -90,7 +88,6 @@ class MSConvertService(common_service.CommonService):
             self.send_msg(9, msg='File type not valid,{}'.format(file_name))
             return None
 
-    # 转换一个文件
     def msconvert_one(self, cmd, cmd_mzml, file_info):
         logger = self.logger
         logger.info('start msconvert file {}, '.format(file_info.file_name))
@@ -106,7 +103,6 @@ class MSConvertService(common_service.CommonService):
                 break
             logger.info(output)
             if output:
-                # 将字节形式的输出转换为字符串形式
                 info_msg = output.decode('utf-8')
                 info_msg = info_msg.rstrip()
                 if len(info_msg) == 0:
@@ -123,7 +119,6 @@ class MSConvertService(common_service.CommonService):
                 break
             logger.info(output)
             if output:
-                # 将字节形式的输出转换为字符串形式
                 info_msg = output.decode('utf-8')
                 info_msg = info_msg.rstrip()
                 if len(info_msg) == 0:

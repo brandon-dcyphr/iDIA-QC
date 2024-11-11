@@ -48,21 +48,6 @@ class SetPanel(wx.Panel):
         self.default_font_ctrl.SetMaxPointSize(40)
         gbSizer3.Add(self.default_font_ctrl, wx.GBPosition(2, 7), wx.GBSpan(1, 1), wx.ALL, 5)
 
-        # notify_text = wx.StaticText(self, wx.ID_ANY, u"Notify", wx.DefaultPosition, wx.DefaultSize, 0)
-        # notify_text.SetFont(common_font)
-        # notify_text.Wrap(-1)
-        # gbSizer3.Add(notify_text, wx.GBPosition(6, 4), wx.GBSpan(1, 1), wx.ALL, 5)
-        #
-        # wx_notify_label = wx.StaticText(self, wx.ID_ANY, u"WX notify token", wx.DefaultPosition, wx.DefaultSize, 0)
-        # wx_notify_label.SetFont(common_font)
-        # wx_notify_label.Wrap(-1)
-        # gbSizer3.Add(wx_notify_label, wx.GBPosition(8, 4), wx.GBSpan(1, 1), wx.ALL, 5)
-        #
-        # self.wx_notify_token_text = wx.TextCtrl(self, wx.ID_ANY, wx_notify_token,
-        #                                         wx.DefaultPosition, wx.Size(500, 100), wx.TE_MULTILINE | wx.TE_RICH2)
-        # self.wx_notify_token_text.SetFont(common_font)
-        # gbSizer3.Add(self.wx_notify_token_text, wx.GBPosition(8, 7), wx.GBSpan(3, 8), wx.ALL | wx.EXPAND, 5)
-
         self.save_btn = wx.Button(self, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0)
         self.save_btn.SetFont(common_font)
 

@@ -22,7 +22,7 @@ class S3Service(common_service.CommonService):
         logger = self.logger
         try:
             self.is_running = True
-            # 及清单中DIANN结果、stat、mzXML
+            # 、stat、mzXML
             logger.info('start S3 process')
             self.send_msg(9, self.build_start_diaqc_cmd())
             self.send_msg(0, 'Processing S3 step to obtain the F5, F6, F7, F10, F13, F14 and F17', with_time=True)
@@ -40,7 +40,7 @@ class S3Service(common_service.CommonService):
             for key, value in savedict.items():
                 init_write(self.s3_output_path, feadata, key, value)
             feadata['ERROR'] = open(self.s3_output_path + '/ERROR_Files.txt', 'w')
-            # 临时修改为同步读取
+            #
             deal_file_count = 0
             file_number = len(self.file_list)
 
@@ -70,7 +70,7 @@ class S3Service(common_service.CommonService):
                 ins_out_dir = os.path.join(self.s3_output_path, ins)
                 if not os.path.exists(ins_out_dir):
                     os.mkdir(ins_out_dir)
-            # 使用绝对路径读取
+            #
             # % f5 <-old F3
             if not self.run_flag:
                 self.send_msg(2)
@@ -223,7 +223,7 @@ class S3Service(common_service.CommonService):
         cols = ['Run_ID', 'Median.Mass.Acc.MS1(ppm)']
         for ins in run_ins_id_dict.keys():
             logger.info('deal S3, F7 process, ins is: {}'.format(ins))
-            # 处理一下数据
+            #
             tanno = run_ins_id_dict.get(ins)
             tfea = fea.loc[fea['Run'].isin(list(tanno.keys())), :]
             tfea['Run'] = tfea['Run'].map(tanno)

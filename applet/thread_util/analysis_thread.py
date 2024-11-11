@@ -29,9 +29,7 @@ class AnalysisThread(Thread):
     def __init__(self, diann_path, msconvert_path, output_path, inst_name, run_prefix, choose_file_list: [FileInfo],
                  notify_email, wx_token,
                  model_dir_path='./resource/model/unisplit'):
-        # 线程实例化时立即启动
         Thread.__init__(self)
-        # 初始化logger
         logger_path, logger = logger_utils.get_current_logger()
         self.logger = logger
         self.logger_path = logger_path
@@ -130,7 +128,6 @@ class AnalysisThread(Thread):
                     pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
                     return False
 
-            # 解析数据，存储至sqlite
             self.data_save_deal_service.f4_file_path = self.s6_deal_service.ms1_chazi_file_path
             self.data_save_deal_service.f8_file_path = self.s6_deal_service.ms1_org_area_file_path
             self.data_save_deal_service.f11_file_path = self.s6_deal_service.ms2_org_area_file_path
@@ -152,22 +149,13 @@ class AnalysisThread(Thread):
 
             self.pre_score_service.save_to_csv(self.output_path, 0)
 
-            # pic_dir_path = os.path.join(self.output_path, 'pic')
-            # if not os.path.exists(pic_dir_path):
-            #     os.mkdir(pic_dir_path)
-
-            # info_msg = AnalysisInfoMsg(11, 0, 'Saving the html file, path is: ' + pic_dir_path)
-            # pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
             draw_result = self.pic_deal_service.draw_pic_all(0)
             if not draw_result:
                 info_msg = AnalysisInfoMsg(11, 3, 'Draw pic error, stop')
                 pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
                 return False
             logger.info('End draw pic')
-            # info_msg = AnalysisInfoMsg(11, 1, '')
-            # pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
 
-            # 发送邮件通知
             self.notify_service.deal_process()
 
             logger.info('-----end analysis------')
@@ -176,7 +164,6 @@ class AnalysisThread(Thread):
             info_msg = AnalysisInfoMsg(0, 3, 'Deal analysis Exception')
             pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
 
-        # 发送完成事件
         info_msg = AnalysisInfoMsg(12, 9, 'Log saved to {}'.format(self.logger_path))
         pub.sendMessage('analysis_info', msg=json.dumps(info_msg.__dict__))
 
@@ -200,7 +187,6 @@ class AnalysisThread(Thread):
     def delete_temp_file(self):
         logger = self.logger
         logger.info('Start clear temp mzXML file.')
-        # 找到mzml的目录
         temp_mzml_dir = os.path.join(self.output_path, 'mzXML')
         try:
             shutil.rmtree(temp_mzml_dir)
