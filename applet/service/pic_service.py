@@ -829,3 +829,12 @@ class PicService(common_service.CommonService):
             Grid(init_opts).add(heat_map_pic, grid_opts=opts.GridOpts(pos_right="15%"), is_control_axis_index=True)
         )
         return grid
+
+# BM attempt to export
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s1.csv', header=False)
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s2.csv', header=False)
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s3.csv', header=False)
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s4.csv', header=False)
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s5.csv', header=False)
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s6.csv', header=False)
+pd.DataFrame.from_dict(data=s7_data_tag_dict, orient='index').to_csv('F:/QCs/RoadRunner/idia_qc_output/metric_performance_output/s7.csv', header=False)

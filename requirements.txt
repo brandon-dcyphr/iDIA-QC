@@ -7,10 +7,9 @@ pyecharts
 pyyaml
 pycaret
 xgboost
-pyinstaller==6.2.0
+pyinstaller
 timspy
-opentimspy==1.0.12
-
+opentimspy
 matplotlib
 scipy
 scikit-learn
